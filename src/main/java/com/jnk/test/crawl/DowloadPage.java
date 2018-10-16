@@ -18,9 +18,8 @@ public class DowloadPage implements Download {
 
     public static void main(String[] args) {
         DowloadPage dowloadPage=new DowloadPage();
-        for(int i=0;i<50;i++){
-            dowloadPage.downloadPage();
+        dowloadPage.downloadPage();
 
-        }
+
     }
 }
