@@ -1,12 +1,18 @@
 package com.jnk.test.util;
 
+import com.alibaba.druid.util.JdbcUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -217,10 +223,35 @@ public class CheckUtil {
         }
     }
 
-    public static void main(String [] args) throws Exception{
+    public static void main(String[] args) {
+//        for (int i=0;i<1000;i++){
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//
+//                        Connection connection= JdbcUtils;
+//
+//                        Statement st=connection.createStatement();
+//                        ResultSet rs=st.executeQuery("select  id  from  xs where id='1'");
+//                        while (rs.next()){
+//
+//                            String id=rs.getString("id");
+//                        }
+//
+//                    }catch (SQLException e){
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//            }).start();
+//
+//        }
 
-       System.out.println(CheckUtil.isAfterBelong("09:00","03:00"));
+
+
     }
+
 }
 
 

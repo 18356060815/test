@@ -3,6 +3,7 @@ package com.jnk.test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 @SpringBootApplication
 public class TestApplication {
 
@@ -11,4 +12,6 @@ public class TestApplication {
         SpringApplication.run(TestApplication.class, args);
 
     }
+
+
 }
