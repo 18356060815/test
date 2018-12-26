@@ -1,7 +1,5 @@
 package com.jnk.test.util;
 
-
-import net.sf.json.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -19,7 +17,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -38,8 +35,8 @@ public class HttpClientUtilPro {
     private static void init() {
         if (cm == null) {
             cm = new PoolingHttpClientConnectionManager();
-            cm.setMaxTotal(60);// 整个连接池最大连接数
-            cm.setDefaultMaxPerRoute(5);// 每路由最大连接数，默认值是2
+            cm.setMaxTotal(100);// 整个连接池最大连接数
+            cm.setDefaultMaxPerRoute(10);// 每路由最大连接数，默认值是2
         }
     }
 
@@ -54,52 +51,6 @@ public class HttpClientUtilPro {
     }
 
 
-//    static String IPURL="http://webapi.http.zhimacangku.com/getip?num=1&type=2&pro=&city=0&yys=0&port=1&pack=20822&ts=1&ys=1&cs=0&lb=1&sb=0&pb=4&mr=1&regions=";
-//    public static JSONObject getProxyIp() {
-//        HttpGet httpGet = new HttpGet(IPURL);
-//        RequestConfig config = RequestConfig.custom()
-//                .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
-//                .build();
-//        httpGet.setConfig(config);
-//        String ipport=getResult(httpGet);
-//
-//        JSONObject json=JSONObject.fromObject(ipport);
-//
-//        HttpGet httpTest = new HttpGet("https://www.baidu.com");
-//
-//        CloseableHttpClient httpClient = getHttpClient();
-//        try {
-//            CloseableHttpResponse response = httpClient.execute(httpTest);
-//            int Status=response.getStatusLine().getStatusCode();
-//            System.out.println("Status : "+Status);
-//            if(Status==200){
-//                return json;
-//            }else {
-//                CheckUtil.sleep(4000);
-//                json=getProxyIp();
-//            }
-//        }catch (Throwable e){
-//            e.printStackTrace();
-//            logger.error(getTrace(e)+"IP不可用");
-//            CheckUtil.sleep(4000);
-//            json=getProxyIp();
-//        }finally {
-//            System.out.println("=========");
-//        }
-//        return json;
-//    }
-
-
-
-
-    // 代理隧道验证信息
-    final static String ProxyUser = "H6X17QB4LC84KZOD";
-    final static String ProxyPass = "E5B0CD39481D0579";
-
-    // 代理服务器
-    final static String ProxyHost = "http-dyn.abuyun.com";
-    final static Integer ProxyPort = 9020;
-
 
 
     /**
@@ -108,35 +59,17 @@ public class HttpClientUtilPro {
      *all
      *
      * **/
-    public static String httpGetRequest(String url) {
+    public static String httpGetRequest(String url,int requestCount) {
         HttpGet httpGet = new HttpGet(url);
         RequestConfig config = RequestConfig.custom()
                .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
                .build();
         httpGet.setConfig(config);
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36");
-        return getResult(httpGet);
+        return getResult(httpGet,requestCount);
     }
 
 
-    /**
-     *
-     *
-     *all
-     *
-     * **/
-    public static JSONObject JshttpGetRequest(String url, String start) {
-        HttpGet httpGet = new HttpGet(url);
-        RequestConfig config = RequestConfig.custom()
-                .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
-                .build();
-        httpGet.setConfig(config);
-        String str=getResult(httpGet);
-        str=str.replace(start,"");
-        str=str.substring(0,str.length()-2);
-        return JSONObject.fromObject(str);
-
-    }
 
 
 
@@ -146,7 +79,7 @@ public class HttpClientUtilPro {
      *
      *
      * **/
-    public static String httpGetRequest(String url, Map<String, Object> params) throws URISyntaxException {
+    public static String httpGetRequest(String url, Map<String, Object> params,int requestCount) throws URISyntaxException {
         URIBuilder ub = new URIBuilder();
         ub.setPath(url);
 
@@ -154,7 +87,7 @@ public class HttpClientUtilPro {
         ub.setParameters(pairs);
 
         HttpGet httpGet = new HttpGet(ub.build());
-        return getResult(httpGet);
+        return getResult(httpGet,requestCount);
     }
 
 
@@ -165,7 +98,7 @@ public class HttpClientUtilPro {
      *ssq
      *
      * **/
-    public static String httpGetRequestHead(String url, Map<String, Object> headers) {
+    public static String httpGetRequestHead(String url, Map<String, Object> headers,int requestCount) {
         HttpGet httpGet = new HttpGet(url);
         RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
@@ -175,7 +108,7 @@ public class HttpClientUtilPro {
             httpGet.setHeader(key, headers.get(key).toString());
 
         }
-        return getResult(httpGet);
+        return getResult(httpGet,requestCount);
     }
 
 
@@ -185,13 +118,13 @@ public class HttpClientUtilPro {
      *14_9结果
      *
      * **/
-    public static String httpPostRequest(String url) {
+    public static String httpPostRequest(String url,int requestCount) {
         HttpPost httpPost = new HttpPost(url);
         RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
                 .build();
         httpPost.setConfig(config);
-        return getResult(httpPost);
+        return getResult(httpPost,requestCount);
     }
 
 
@@ -201,16 +134,19 @@ public class HttpClientUtilPro {
      *
      *
      * **/
-    public static String httpPostRequest(String url, Map<String, Object> params) throws UnsupportedEncodingException {
+    public static String httpPostRequest(String url, Map<String, Object> params,int requestCount){
         HttpPost httpPost = new HttpPost(url);
         ArrayList<NameValuePair> pairs = covertParams2NVPS(params);
-
-        httpPost.setEntity(new UrlEncodedFormEntity(pairs, UTF_8));
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(pairs, UTF_8));
+        }catch (UnsupportedEncodingException e){
+            CheckUtil.getTrace(e);
+        }
         RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
                 .build();
         httpPost.setConfig(config);
-        return getResult(httpPost);
+        return getResult(httpPost,requestCount);
     }
 
     /**
@@ -219,8 +155,8 @@ public class HttpClientUtilPro {
      *
      *
      * **/
-    public static String httpPostRequest(String url, Map<String, Object> headers, Map<String, Object> params)
-            throws UnsupportedEncodingException {
+    public static String httpPostRequest(String url, Map<String, Object> headers, Map<String, Object> params,int requestCount)
+        {
         HttpPost httpPost = new HttpPost(url);
 
         for (Map.Entry<String, Object> param : headers.entrySet()) {
@@ -228,9 +164,14 @@ public class HttpClientUtilPro {
         }
 
         ArrayList<NameValuePair> pairs = covertParams2NVPS(params);
-        httpPost.setEntity(new UrlEncodedFormEntity(pairs, UTF_8));
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(pairs, UTF_8));
 
-        return getResult(httpPost);
+        }catch (UnsupportedEncodingException e){
+            CheckUtil.getTrace(e);
+        }
+
+        return getResult(httpPost,requestCount);
     }
 
     private static ArrayList<NameValuePair> covertParams2NVPS(Map<String, Object> params) {
@@ -248,87 +189,63 @@ public class HttpClientUtilPro {
      * @param request
      * @return
      */
-    private static String getResult(HttpRequestBase request) {
-        String EMPTY_STR = "";
+    private static String getResult(HttpRequestBase request,int requestCount) {
+        if(requestCount==3){
+            return null;
+        }
+        String EMPTY_STR = null;
         // CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpClient httpClient = getHttpClient();
+        CloseableHttpResponse response=null;
         try {
-            CloseableHttpResponse response = httpClient.execute(request);
-            // response.getStatusLine().getStatusCode();
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                // long len = entity.getContentLength();// -1 表示长度未知
-                String result = EntityUtils.toString(entity);
-                response.close();
-                // httpClient.close();
-                return result;
+            requestCount++;
+            response = httpClient.execute(request);
+            int statusLine=response.getStatusLine().getStatusCode();
+            System.out.println(statusLine);
+            if(statusLine!=200){
+                    CheckUtil.sleep(2000);
+                    response.close();
+                    logger.info("返回不正确!重试中......");
+                    EMPTY_STR=getResult(request,requestCount);
+            }else {
+                // response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    // long len = entity.getContentLength();// -1 表示长度未知
+                    EMPTY_STR = EntityUtils.toString(entity);
+                    response.close();
+                    //httpClient.close();
+                    return EMPTY_STR;
+                }
             }
+
         } catch (Throwable e) {
             logger.error(getTrace(e));
-            CheckUtil.sleep(6000);
-            EMPTY_STR=getResult(request);
+            CheckUtil.sleep(2000);
+            response.close();
+            logger.info("异常!重试中......");
+            EMPTY_STR=getResult(request,requestCount);
         }  finally {
+            return EMPTY_STR;
 
         }
 
-        return EMPTY_STR;
     }
 
 
 
-
-
-
-
-
-
-
-
-    //对okooo编码 单独设置  可整体设置为动态编码精简代码 。
-
-
-    public static String httpGetRequestokooo(String url) {
-        HttpGet httpGet = new HttpGet(url);
-        RequestConfig config = RequestConfig.custom()
-                .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
-                .build();
-        httpGet.setConfig(config);
-        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36");
-        return getResultokooo(httpGet);
-    }
-
-
-
-    private static String getResultokooo(HttpRequestBase request) {
-        String EMPTY_STR = "";
-        // CloseableHttpClient httpClient = HttpClients.createDefault();
-        CloseableHttpClient httpClient = getHttpClient();
-        try {
-            CloseableHttpResponse response = httpClient.execute(request);
-            // response.getStatusLine().getStatusCode();
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                // long len = entity.getContentLength();// -1 表示长度未知
-                String result = EntityUtils.toString(entity,"gb2312");
-                response.close();
-                // httpClient.close();
-                return result;
-            }
-        } catch (Throwable e) {
-            logger.error(getTrace(e));
-            CheckUtil.sleep(6000);
-            EMPTY_STR=getResultokooo(request);
-        }  finally {
-
-        }
-
-        return EMPTY_STR;
-    }
 
 
 
     public static void main(String[]a){
-        System.out.println(httpGetRequest("https://www.baidu.com"));
+        for(int i=0;i<100;i++){
+            System.out.println("-----------------------------------------------start"+i);
+
+            System.out.println(httpGetRequest
+            ("https://api.jinse.co",1));
+            System.out.println("-----------------------------------------------end");
+
+        }
     }
 }
 
