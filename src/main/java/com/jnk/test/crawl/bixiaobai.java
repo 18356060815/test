@@ -112,9 +112,8 @@ public class bixiaobai {
                 List <Map<String,Object>>list=dbUtil.find("select id from project_info where name='"+name.replace("'","\\'")+"' and symbol='"+symbol.replace("'","\\'")+"'");
                 System.out.println("hotnode是否有数据 : "+list);
                 if(list.size()!=0){
-                    k++;
+                    dbUtil.execute("update project_info set finances='"+project_content.toString()+"' where id="+list.get(0).get("id").toString());
                 }
-//                System.exit(0);
 //                if(list.size()!=0){
 //                    Object o=list.get(0).get("id");
 //                    dbUtil.execute("update project_info set finances='"+project_content+"' where id="+o);

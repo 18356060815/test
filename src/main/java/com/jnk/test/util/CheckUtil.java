@@ -125,6 +125,18 @@ public class CheckUtil {
         return sdf.format(calendar.getTime());
     }
 
+    public static String getSearchKey(List<String> list){
+        String searchKey="";
+        for(String s:list){
+            searchKey+=s+",";
+
+        }
+        if(!searchKey.equals("")){
+            searchKey=searchKey.substring(0,searchKey.length()-1);
+        }
+        return  searchKey;
+    }
+
     public static void main(String[] args) {
         System.out.println(stampToDate("1542162345",true));
     }

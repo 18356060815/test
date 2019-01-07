@@ -213,7 +213,6 @@ public class DateUtil {
 	}
 
 
-	//链得得
 	public static  String getHecaijingLater(String later){
 		String times="";
 		if(!"".equals(later)&&later!=null){
@@ -251,6 +250,8 @@ public class DateUtil {
 				 later=later.replace("年前","");
 				 times=getOneHoursAgoTime("YEAR",Integer.parseInt(later));
 
+			 }else {
+			 	return later;
 			 }
 		}
 		return  times;

@@ -664,7 +664,7 @@ public class DowloadPage {
 //    //excerpt
 //    String summary=jsonObject1.getJSONObject("target").getString("excerpt");//简介
 //    summary=Jsoup.parse(summary).text();
-//                        System.out.println("简介 "+ summary);
+//                        System.out.println("简介 "+ sum金色财经mary);
 //    //image_url
 //    String pic_url=jsonObject1.getJSONObject("target").getOrDefault("image_url","").toString();//图片
 //                        System.out.println("图片 "+ pic_url);
@@ -679,6 +679,7 @@ public class DowloadPage {
 //    String zhihu_kind="article";
 //    String from_interface="ZHIHU_NEWS";
 //    String news_type_id="16";
+
     @Test //链得得 types 应用
     public  void LiandedeDownloadPage(){
         for(int i=1;i<173;i++){
@@ -729,7 +730,7 @@ public class DowloadPage {
 
     }
 
-    //核财经  观点
+    //核财经  观点 //未
     @Test
     public  void HecaijingDownload(){
         int i=1;
@@ -787,138 +788,238 @@ public class DowloadPage {
         }
     }
 
-    @Test
-    //链向财经 精英视点
-    public void getLianxiangDownload(){
-        for(int i=1;i<770;i++){
-            CheckUtil.sleep(1000);
-            String  json=HttpClientUtilPro.httpGetRequest("https://www.chainfor.com/home/list/news/data.do?device_type=0&categoryId=11&pageNo="+i,RequestCount);
-            JSONObject jsonObject=JSONObject.fromObject(json);
-            System.out.println(jsonObject);
-            JSONArray jsonArray=jsonObject.getJSONArray("list");
-            for(Object o:jsonArray){
-                JSONObject jsonObject1=JSONObject.fromObject(o);
-                String title=jsonObject1.getString("title");
-                System.out.println("标题 : "+title);
-
-                String summary=jsonObject1.getString("introduction");
-                System.out.println("简介 : "+summary);
-
-                String author=jsonObject1.getString("nickName");
-                System.out.println("作者 : "+author);
-
-                String search_key=jsonObject1.getString("lable").replace("，",",");
-                System.out.println("关键字 : "+search_key);
-
-                String pic_url="https://lianxiangfiles.oss-cn-beijing.aliyuncs.com/"+jsonObject1.getString("imgUrl")+"?x-oss-process=style/news";
-                System.out.println("图片地址 : "+pic_url);
-
-                String href_addr="https://www.chainfor.com/news/show/"+jsonObject1.getString("newDetailId")+".html";
-                System.out.println("新闻地址 : "+href_addr);
-
-                String PublishTime=jsonObject1.getJSONObject("createDate").getString("time");
-                PublishTime=DateUtil.stampToDate(PublishTime);
-                System.out.println("更新时间 "+PublishTime);
-                String types="深度";
-                String from_site=jsonObject1.getString("source");
-                System.out.println("来源 "+from_site);
-
-                String from_interface="LIANXIANG_NEWS";
-                String news_type_id="12";
-                System.out.println("--------------------------------");
-                dbUtil.insertAndQuery( "insert into news_info " +
-                        "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
-                        " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
-
-            }
-
-        }
-
-
-    }
-
-
-
-
-
-//    //hotNode App 项目
 //    @Test
-//    public  void   getHotNode() {
-//        int[] arr = {23, 29, 19, 42};
-//        String tags="";
-//        int y=0;
-//        for (int i = 0; i < arr.length; i++) {
-//            int j=1;
-//            a:while (true){
-//                    if(arr[i]==23){
-//                        tags="游戏";
-//                    }else if(arr[i]==29){
-//                        tags="矿相关";
-//                    }
-//                    else if(arr[i]==19){
-//                        tags="支付";
-//                    }else if(arr[i]==42){
-//                        tags="公益";
-//                    }
-//            String x = HttpClientUtilPro.httpGetRequest("https://api.personal.hotnode.cn/v1/coins/public" +
-//                    "?progress=&industry_id=&tag_id="+arr[i] +
-//                    "&region_id=&purpose_id=&is_reachable=0&has_weekly=0&has_rating=0&has_white_paper=0&is_renowned_industry=0" +
-//                    "&currentPage="+j+"&pageSize=20&page="+j+"&per-page=20", RequestCount);
-//                System.out.println("页数 : " + j);
-//            JSONArray jsonArray = JSONArray.fromObject(x);
+//    //链向财经 精英视点
+//    public void getLianxiangDownload(){
+//        for(int i=1;i<770;i++){
+//            CheckUtil.sleep(1000);
+//            String  json=HttpClientUtilPro.httpGetRequest("https://www.chainfor.com/home/list/news/data.do?device_type=0&categoryId=11&pageNo="+i,RequestCount);
+//            JSONObject jsonObject=JSONObject.fromObject(json);
+//            System.out.println(jsonObject);
+//            JSONArray jsonArray=jsonObject.getJSONArray("list");
+//            for(Object o:jsonArray){
+//                JSONObject jsonObject1=JSONObject.fromObject(o);
+//                String title=jsonObject1.getString("title");
+//                System.out.println("标题 : "+title);
 //
-//                for (Object o : jsonArray) {
-//                    y++;
-//                    JSONObject jsonObject = JSONObject.fromObject(o);
-//                    String name = jsonObject.getString("name");
-//                    String symbol = jsonObject.getString("symbol");
-//                    String icon = jsonObject.getString("icon");
-//                    String id = jsonObject.getString("id");
-//                    JSONArray tagArr = jsonObject.getJSONArray("tags");
-//                    String homepage= jsonObject.getString("homepage");
-//                    String tag = "";
-//                    for (Object o1 : tagArr) {
-//                        String tagname = JSONObject.fromObject(o1).getString("name");
-//                        tag += tagname + ",";
+//                String summary=jsonObject1.getString("introduction");
+//                System.out.println("简介 : "+summary);
 //
-//                    }
-//                    if (!tag.equals("")) {
-//                        tag = tag.substring(0, tag.length() - 1);
-//                    }
-////                    String m = HttpClientUtilPro.httpGetRequest("https://api.personal.hotnode.cn/v1/coins/" + id, RequestCount);
-////                    String description = JSONObject.fromObject(m).getString("description");//详情
-//                    String description=jsonObject.getString("description");
-//                    System.out.println("分类 : " + tags);
-//                    System.out.println("项目名 : " + name);
-//                    System.out.println("图标 : " + icon);
-//                    System.out.println("标签 : " + tag);
-//                    System.out.println("官网 : " + homepage);
-//                    System.out.println("详情 : " + description);
-//                    System.out.println("-------------------------------------");
+//                String author=jsonObject1.getString("nickName");
+//                System.out.println("作者 : "+author);
 //
+//                String search_key=jsonObject1.getString("lable").replace("，",",");
+//                System.out.println("关键字 : "+search_key);
 //
-//                }
+//                String pic_url="https://lianxiangfiles.oss-cn-beijing.aliyuncs.com/"+jsonObject1.getString("imgUrl")+"?x-oss-process=style/news";
+//                System.out.println("图片地址 : "+pic_url);
 //
+//                String href_addr="https://www.chainfor.com/news/show/"+jsonObject1.getString("newDetailId")+".html";
+//                System.out.println("新闻地址 : "+href_addr);
 //
+//                String PublishTime=jsonObject1.getJSONObject("createDate").getString("time");
+//                PublishTime=DateUtil.stampToDate(PublishTime);
+//                System.out.println("更新时间 "+PublishTime);
+//                String types="深度";
+//                String from_site=jsonObject1.getString("source");
+//                System.out.println("来源 "+from_site);
 //
-//                String next = HttpClientUtilPro.httpGetRequest("https://api.personal.hotnode.cn/v1/coins/public" +
-//                        "?progress=&industry_id=&tag_id="+arr[i] +
-//                        "&region_id=&purpose_id=&is_reachable=0&has_weekly=0&has_rating=0&has_white_paper=0&is_renowned_industry=0" +
-//                        "&currentPage="+j+1+"&pageSize=20&page="+j+1+"&per-page=20", RequestCount);
-//                if (next.equals(x)) {
-//                    break a;
-//                }
+//                String from_interface="LIANXIANG_NEWS";
+//                String news_type_id="12";
+//                System.out.println("--------------------------------");
+//                dbUtil.insertAndQuery( "insert into news_info " +
+//                        "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+//                        " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
 //
-//                j++;
 //            }
+//
 //        }
-//        System.out.println("数据量"+y);
+//
+//
 //    }
 
 
 
 
+    @Test
+    //挖链网 //未
+    public  void WalianDownloadPage(){
+        Map map=new HashMap<>();
+        map.put("channelId","26");
+        map.put("rows","20");
+        for(int i=1;i<=583;i++){
+            map.put("page",i);
+            String  document= HttpClientUtilPro.httpPostRequest("https://api.walian.cn/api/article-lists",map,RequestCount);
+            JSONObject jsonObject=JSONObject.fromObject(document);
+            System.out.println(jsonObject);
+            JSONObject jsonObject1=jsonObject.getJSONObject("data");
+            JSONArray jsonArray=jsonObject1.getJSONArray("list");
+            for(Object o:jsonArray){
+                JSONObject jsonObject2=JSONObject.fromObject(o);
+                String title=jsonObject2.getString("title");
+                System.out.println("标题 "+title);
 
+                String author=jsonObject2.getString("nickName");
+                System.out.println("作者 "+author);
+
+                Object jsonArrays1=jsonObject2.get("tags");
+
+                String search_key="";
+                if(!jsonArrays1.equals(null)){
+                    JSONArray jsonArrays=JSONArray.fromObject(jsonArrays1);
+                    for(Object oi:jsonArrays){
+                        JSONObject jsonObject3=JSONObject.fromObject(oi);
+                        String tagname=jsonObject3.getString("tagName");
+                        search_key+=tagname+",";
+
+                    }
+                }
+
+                if(!search_key.equals("")){
+                    search_key=search_key.substring(0,search_key.length()-1);
+                }
+                System.out.println("关键字 "+search_key);
+
+                String summary=jsonObject2.getString("intro");
+                System.out.println("简介 "+summary);
+                String pic_url=jsonObject2.getString("logo");
+                System.out.println("图片 "+pic_url);
+
+                String href_addr="https://www.walian.cn/news/"+jsonObject2.getString("id")+".html";
+                System.out.println("新闻地址 "+href_addr);
+
+                String PublishTime=jsonObject2.getString("pubTime");
+                PublishTime= DateUtil.stampToDate(PublishTime,false);
+                System.out.println("更新时间 "+PublishTime);
+
+                String from_site="挖链网";
+                String from_interface="挖链网";
+                String news_type_id="12";
+                dbUtil.insertAndQuery( "insert into news_info " +
+                        "(`status`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+
+            }
+
+
+        }
+
+    }
+    @Test
+    //陀螺财经 //未
+    public void Tuoluocaijing(){
+        String tuo= HttpClientUtilPro.httpGetRequest("https://www.tuoluocaijing.cn/api/article/get_list?page_num=1&limit=5000&toutiao=1",RequestCount);
+        JSONObject jsonObject=JSONObject.fromObject(tuo);
+        JSONObject jsonObject1=jsonObject.getJSONObject("data");
+        JSONArray  jsonArray=jsonObject1.getJSONArray("list");
+        for(Object o:jsonArray) {
+            JSONObject jsonObject2=JSONObject.fromObject(o);
+            if(jsonObject2.getString("is_top").equals("1")){
+                continue;
+            }
+
+            String title=jsonObject2.getString("title");
+            System.out.println("标题 "+title);
+
+            String author=jsonObject2.getString("edit_name");
+            System.out.println("作者 "+author);
+
+
+            String search_key="";
+//            if(!jsonArrays1.equals(null)){
+//                JSONArray jsonArrays=JSONArray.fromObject(jsonArrays1);
+//                for(Object oi:jsonArrays){
+//                    JSONObject jsonObject3=JSONObject.fromObject(oi);
+//                    String tagname=jsonObject3.getString("tagName");
+//                    search_key+=tagname+",";
+//
+//                }
+//            }
+//
+//            if(!search_key.equals("")){
+//                search_key=search_key.substring(0,search_key.length()-1);
+//            }
+            System.out.println("关键字 "+search_key);
+
+            String summary=jsonObject2.getString("summary");
+            System.out.println("简介 "+summary);
+            String pic_url=jsonObject2.getString("thumbnail");
+            System.out.println("图片 "+pic_url);
+
+            String href_addr="https://www.tuoluocaijing.cn/article/detail-"+jsonObject2.getString("id")+".html";
+            System.out.println("新闻地址 "+href_addr);
+
+            String PublishTime=jsonObject2.getString("audit_time");
+            System.out.println("更新时间 "+PublishTime);
+
+            String from_site="陀螺财经";
+            String from_interface="陀螺财经";
+            String news_type_id="12";
+            dbUtil.insertAndQuery( "insert into news_info " +
+                    "(`status`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                    " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+
+        }
+    }
+
+    //深链财经 推荐 all
+    @Test
+    public void shenliancaijing(){
+        int i=1;
+        while (true){
+            Map map=new HashMap();
+            map.put("id",8);
+            map.put("limit",50);
+            map.put("page",i);
+            //id=8&limit=12&page=3
+            String data=HttpClientUtilPro.httpPostRequest("https://www.shenliancaijing.com/portal/index/centerporApi",map,RequestCount);
+            JSONObject jsonObject=JSONObject.fromObject(data);
+            System.out.println(jsonObject);
+            if(jsonObject.getString("code").equals("202")){
+                return;
+            }
+            JSONArray jsonArray=jsonObject.getJSONArray("data");
+
+            for(Object o:jsonArray){
+                JSONObject jsonObject2=JSONObject.fromObject(o);
+                String title=jsonObject2.getString("post_title");
+                System.out.println("标题 "+title);
+
+                String author=jsonObject2.getString("post_source");
+                System.out.println("作者 "+author);
+
+                String search_key="";
+                System.out.println("关键字 "+search_key);
+
+                String summary=jsonObject2.getString("post_excerpt");
+                System.out.println("简介 "+summary);
+
+                String pic_url="https://www.shenliancaijing.com/"+jsonObject2.getString("pic");
+                System.out.println("图片 "+pic_url);
+
+                String href_addr=jsonObject2.getString("url");
+                System.out.println("新闻地址 "+href_addr);
+
+                String PublishTime=jsonObject2.getString("published_time");
+                PublishTime=getHecaijingLater(PublishTime);
+                System.out.println("更新时间2 "+PublishTime);
+
+                String from_site="深链财经";
+                String from_interface="深链财经";
+                String news_type_id="12";
+                dbUtil.insertAndQuery( "insert into news_info " +
+                        "(`status`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+
+
+            }
+
+
+            i++;
+            System.out.println("---"+i);
+        }
+
+    }
 
 }
 

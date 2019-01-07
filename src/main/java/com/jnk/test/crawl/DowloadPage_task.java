@@ -20,9 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.jnk.test.util.CheckUtil.getTrace;
 import static com.jnk.test.util.DateUtil.getHecaijingLater;
@@ -102,7 +100,7 @@ public class DowloadPage_task {
 //
 //        }
 //    }
-
+    @Test
     public void BabiteDownloadPage(){
         ///巴比特 带标签数据 1
         //19
@@ -172,24 +170,24 @@ public class DowloadPage_task {
     }
     @Test
     public  void JinseDownloadPage(){
-        //金色财经 带标签数据 1
+        //金色财经 带标签数据  倒序 优先有标签数据 最后推荐 避免其他标签无数据
         //20
         Document document=JsoupUtilPor.get("https://www.jinse.com/",RequestCount);
         Elements elements=document.select("ul.index-main-nav");
         Elements elements1=elements.select("a");
 
-        for(Element element1 : elements1){
-            String key=element1.attr("title");
-            String url_end=element1.attr("@click");
-            System.out.println(key);
+
+        for(int l=elements1.size()-1;l>=0;l--){
+            String key=elements1.get(l).attr("title");
+            String url_end=elements1.get(l).attr("@click");
+            System.out.println("标签 : "+key);
             if (url_end==null||"".equals(url_end)){
                 continue;
             }
-            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")) {
-                continue;
-            }
+//            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")) {
+//                key=null;
+//            }
             url_end=url_end.substring(url_end.indexOf(", '")+3,url_end.indexOf("',"));
-            System.out.println(url_end);
             String  information_id="0";
 
                 String url="https://api.jinse.com/v6/information/list?catelogue_key="+url_end+"&limit=23&information_id="+information_id+"&flag=down&version=9.9.9";
@@ -198,66 +196,82 @@ public class DowloadPage_task {
                 information_id=jsonObject.getString("bottom_id");
                 JSONArray jsonArray=jsonObject.getJSONArray("list");
 
-
+            System.err.println("------"+jsonArray);
                 if(jsonArray.size()!=0){
                     for(int i=0;i<jsonArray.size();i++){
                         try {
                             JSONObject jsonObject2=jsonArray.getJSONObject(i);
-                            String types=key;//标签词
-                            String title=jsonObject2.getString("title");//标题
-                            String author=jsonObject2.getJSONObject("extra").getOrDefault("author","").toString();//作者
+                            if("1".equals(jsonObject2.getString("type"))) {
 
-                            String search_key="";//标签 xx,xx,xx
-                            System.err.println(jsonObject2.getJSONObject("extra"));
-                            String summary=jsonObject2.getJSONObject("extra").getString("summary");//简介
-                            System.err.println("------");
+                                String types = key;//标签词
+                                String title = jsonObject2.getString("title");//标题
+                                String author = jsonObject2.getJSONObject("extra").getOrDefault("author", "").toString();//作者
 
-                            String pic_url=jsonObject2.getJSONObject("extra").getString("thumbnail_pic");//图片链接
-                            String href_addr=jsonObject2.getJSONObject("extra").getString("topic_url");//新闻内容地址
-                            String PublishTime=jsonObject2.getJSONObject("extra").getString("published_at");//publishtime
-                            System.out.println(PublishTime);
+                                String search_key = "";//标签 xx,xx,xx
+                                System.err.println(jsonObject2.getJSONObject("extra"));
+                                String summary = jsonObject2.getJSONObject("extra").getString("summary");//简介
 
-                            if(PublishTime.equals("")||PublishTime==null){
-                                PublishTime=CheckUtil.dateToString(new Date());//publishtime
-                            }else {
-                                PublishTime=CheckUtil.stampToDate(PublishTime,true);
+
+                                String pic_url = jsonObject2.getJSONObject("extra").getString("thumbnail_pic");//图片链接
+                                String href_addr = jsonObject2.getJSONObject("extra").getString("topic_url");//新闻内容地址
+                                String PublishTime = jsonObject2.getJSONObject("extra").getString("published_at");//publishtime
+                                System.out.println(PublishTime);
+
+                                if (PublishTime.equals("") || PublishTime == null) {
+                                    PublishTime = CheckUtil.dateToString(new Date());//publishtime
+                                } else {
+                                    PublishTime = CheckUtil.stampToDate(PublishTime, true);
+                                }
+                                System.out.println(PublishTime);
+                                if (title != null && summary != null && pic_url != null && href_addr != null && author != null) {
+                                    String from_site = author;
+                                    dbUtil.insertAndQuery("insert into news_info " +
+                                            "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
+                                            " values (?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]{"up", "12", types, title, author, search_key, summary, pic_url, href_addr, PublishTime, from_site, "JINSE_NEWS"});
+
+                                    //"('up','" + 12 + "','" + types + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','JINSE_NEWS');", title,href_addr);
+
+                                }
+
+
+                            } else {
+                                continue;
                             }
-                            System.out.println(PublishTime);
-                            if(title!=null&&summary!=null&&pic_url!=null&&href_addr!=null&&author!=null) {
-                                String from_site=author;
-                                dbUtil.insertAndQuery( "insert into news_info " +
-                                        "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
-                                        " values (?,?,?,?,?,?,?,?,?,?,?,?);",title,href_addr,new Object[]{"up","12",types,title,author,search_key,summary,pic_url,href_addr,PublishTime,from_site,"JINSE_NEWS"});
 
-                                //"('up','" + 12 + "','" + types + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','JINSE_NEWS');", title,href_addr);
-
-                            }
                         }catch (Throwable e) {
                             logger.error(getTrace(e));
                             e.printStackTrace();
                         }
 
                     }
+
+
+
+
                 }
 
 
         }
     }
 
-
+    @Test
     public   void HuoXingDownloadPage(){
 
         //火星
         //21
         Document document = JsoupUtilPor.get("http://www.huoxing24.com/",RequestCount);
         Elements elements = document.select("ul#newsTabs").select("li");
-        for (Element element : elements) {
-            String key = element.text();
+
+
+
+        for(int l=elements.size()-1;l>=0;l--){
+
+            String key = elements.get(l).text();
             System.err.println(key);
-            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")|| key.equals("火星号")) {
-                continue;
-            }
-            String id = element.attr("data-id");
+//            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")|| key.equals("火星号")) {
+//                continue;
+//            }
+            String id =  elements.get(l).attr("data-id");
 
             String x=HttpClientUtilPro.httpGetRequest("http://www.huoxing24.com/info/news/shownews?currentPage=1&pageSize=20&channelId="+id,RequestCount);
             JSONObject jsonObject1=JSONObject.fromObject(x);
@@ -313,13 +327,16 @@ public class DowloadPage_task {
         String x = HttpClientUtilPro.httpGetRequest("http://www.jinniu.cn/prefix/info/medias/categories",RequestCount);
         JSONObject jsonObject=JSONObject.fromObject(x);
         JSONArray jsonArray=jsonObject.getJSONArray("data");//提取栏目列
-        for(Object obj:jsonArray){
-            JSONObject jsonObject1=JSONObject.fromObject(obj);
+
+
+
+        for(int i=jsonArray.size()-1;i>=0;i--){
+            JSONObject jsonObject1=JSONObject.fromObject(jsonArray.get(i));
             String key=jsonObject1.getString("nameWeb");//获取电脑端的栏目名称 app端：nameApp
             String id=jsonObject1.getString("id");//获取id 用于访问栏目下新闻url拼接
-            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")) {
-                continue;
-            }
+//            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")) {
+//                continue;
+//            }
             if(key.equals("深度")){
                 key="观点";
                 }
@@ -385,58 +402,58 @@ public class DowloadPage_task {
         }
     }
 
-    @Test //only最新 币莱财经
-    public  void  BilaiDownloadPage(){
-            Document html=JsoupUtilPor.get("https://www.niubilai.com/index/index/ajaxpage?page=1&cateid=71",RequestCount);
-            Elements elements=html.select("div.story");
-
-            for(Element element:elements){
-                String title=element.select("div.thumbnail").select("img").attr("alt");//标题
-                System.out.println("标题 "+ title);
-
-                String author=element.select("div.info-item-cr").select("p.bb").select("a").text().trim();//作者
-                System.out.println("作者 "+ author);
-
-                String search_key=element.select("div.info-item-cr").select("p.bb").select("i").get(0).text().replace(" ",",");//关键字
-                System.out.println("关键字 "+ search_key);
-
-                String summary=element.select("div.info-item-cr").select("p.tt").text();//简介
-                System.out.println("简介 "+ summary);
-
-                String pic_url=" https://www.niubilai.com"+element.select("div.thumbnail").select("img").attr("src");//图片地址
-                pic_url=pic_url.trim();
-                System.out.println("图片地址 "+ pic_url);
-
-                String href_addr="https://www.niubilai.com"+element.select("div.thumbnail").select("a").attr("href");//新闻地址
-                System.out.println("新闻地址 "+ href_addr);
-
-                String PublishTime=element.select("div.info-item-cr").select("p.bb").select("i").get(1).text();//更新时间
-                if(PublishTime.indexOf("分钟前")!=-1){
-                    PublishTime=PublishTime.replace("• ","").replace("分钟前","").trim();
-                    PublishTime=CheckUtil.addTime(new Date(),-Integer.parseInt(PublishTime)).toString();
-                }
-                else if(PublishTime.indexOf("小时前")!=-1){
-                    PublishTime=PublishTime.replace("• ","").replace("小时前","").trim();
-                    PublishTime=CheckUtil.addTime(new Date(),-(Integer.parseInt(PublishTime)*60)).toString();
-                }
-                else {
-                    PublishTime=CheckUtil.dateToString(PublishTime.replace("• ",""));
-                }
-
-                System.out.println("更新时间 "+ PublishTime);
-                System.out.println("--------");
-
-                String from_site=author;
-                dbUtil.insertAndQuery( "insert into news_info " +
-                        "(`status`,`news_type_id`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
-                        " values (?,?,?,?,?,?,?,?,?,?,?);",title,href_addr,new Object[]{"up","12",title,author,search_key,summary,pic_url,href_addr,PublishTime,from_site,"BILAI_NEWS"});
-
-               // "('up','" + 12 + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','BILAI_NEWS');", title,href_addr);
-
-            }
-
-
-    }
+//    @Test //only最新 币莱财经
+//    public  void  BilaiDownloadPage(){
+//            Document html=JsoupUtilPor.get("https://www.niubilai.com/index/index/ajaxpage?page=1&cateid=71",RequestCount);
+//            Elements elements=html.select("div.story");
+//
+//            for(Element element:elements){
+//                String title=element.select("div.thumbnail").select("img").attr("alt");//标题
+//                System.out.println("标题 "+ title);
+//
+//                String author=element.select("div.info-item-cr").select("p.bb").select("a").text().trim();//作者
+//                System.out.println("作者 "+ author);
+//
+//                String search_key=element.select("div.info-item-cr").select("p.bb").select("i").get(0).text().replace(" ",",");//关键字
+//                System.out.println("关键字 "+ search_key);
+//
+//                String summary=element.select("div.info-item-cr").select("p.tt").text();//简介
+//                System.out.println("简介 "+ summary);
+//
+//                String pic_url=" https://www.niubilai.com"+element.select("div.thumbnail").select("img").attr("src");//图片地址
+//                pic_url=pic_url.trim();
+//                System.out.println("图片地址 "+ pic_url);
+//
+//                String href_addr="https://www.niubilai.com"+element.select("div.thumbnail").select("a").attr("href");//新闻地址
+//                System.out.println("新闻地址 "+ href_addr);
+//
+//                String PublishTime=element.select("div.info-item-cr").select("p.bb").select("i").get(1).text();//更新时间
+//                if(PublishTime.indexOf("分钟前")!=-1){
+//                    PublishTime=PublishTime.replace("• ","").replace("分钟前","").trim();
+//                    PublishTime=CheckUtil.addTime(new Date(),-Integer.parseInt(PublishTime)).toString();
+//                }
+//                else if(PublishTime.indexOf("小时前")!=-1){
+//                    PublishTime=PublishTime.replace("• ","").replace("小时前","").trim();
+//                    PublishTime=CheckUtil.addTime(new Date(),-(Integer.parseInt(PublishTime)*60)).toString();
+//                }
+//                else {
+//                    PublishTime=CheckUtil.dateToString(PublishTime.replace("• ",""));
+//                }
+//
+//                System.out.println("更新时间 "+ PublishTime);
+//                System.out.println("--------");
+//
+//                String from_site=author;
+//                dbUtil.insertAndQuery( "insert into news_info " +
+//                        "(`status`,`news_type_id`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
+//                        " values (?,?,?,?,?,?,?,?,?,?,?);",title,href_addr,new Object[]{"up","12",title,author,search_key,summary,pic_url,href_addr,PublishTime,from_site,"BILAI_NEWS"});
+//
+//               // "('up','" + 12 + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','BILAI_NEWS');", title,href_addr);
+//
+//            }
+//
+//
+//    }
 
 
 
@@ -451,10 +468,10 @@ public class DowloadPage_task {
     public  void XihaDownloadPage(){
         Document document=JsoupUtilPor.get("http://www.xiha.top/",RequestCount);
         Elements elements=document.select("ul.news-nav").select("li");
-        for(Element element:elements){
-            if(dbUtil.queryIsexists(element.text().trim())||CheckUtil.Sign(element.text().trim())){//判断是否在标签库  或者 是否是推荐最新头条
+        for(int i=elements.size()-1;i>=0;i--){
+            //if(dbUtil.queryIsexists(element.text().trim())||CheckUtil.Sign(element.text().trim())){//判断是否在标签库  或者 是否是推荐最新头条
                 Map map=new HashMap();
-                String cid=element.attr("data-cid");
+                String cid=elements.get(i).attr("data-cid");
                 System.out.println(cid);
                 map.put("cid",cid);
                 map.put("stale_ids","252,706,853,26495");
@@ -494,8 +511,8 @@ public class DowloadPage_task {
                         System.out.println("更新时间 "+ PublishTime);
                         String from_site=author;
                         dbUtil.insertAndQuery( "insert into news_info " +
-                                "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
-                                " values (?,?,?,?,?,?,?,?,?,?,?,?);",title,href_addr,new Object[]{"up","12",types,title,author,search_key,summary,pic_url,href_addr,PublishTime,from_site,"XIHA_NEWS"});
+                                "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?);",title,href_addr,new Object[]{"up","12",types,title,author,search_key,summary,pic_url,href_addr,PublishTime,from_site,"XIHA_NEWS",PublishTime});
 
                         //"('up','" + 12 + "','" + types + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','XIHA_NEWS');", title,href_addr);
 
@@ -503,7 +520,7 @@ public class DowloadPage_task {
 
                 }
 
-            }
+            //}
 
         }
 
@@ -571,6 +588,7 @@ public class DowloadPage_task {
     @Test
     //链得得应用---->
     public  void LiandedeDownloadPage(){
+
             Document document=JsoupUtilPor.get("https://www.chaindd.com/column/3041170/1",RequestCount);
             Elements elements=document.select("div.mod-article-list").select("li");
             for(Element element:elements){
@@ -617,106 +635,118 @@ public class DowloadPage_task {
 
 
 
-    //核财经  观点
+    //核财经  观点+推荐最新
     @Test
     public  void HecaijingDownload(){
+        //http://www.hecaijing.com/index/loadmore?type=recommend&pn=2
         Document document=JsoupUtilPor.get("http://www.hecaijing.com/shendu/",RequestCount);
-        String typeid= document.select("a.active").attr("type");
-        String jsons=HttpClientUtilPro.httpGetRequest("http://www.hecaijing.com/index/loadmore?type="+typeid+"&pn=1",RequestCount);
+        Document documents=JsoupUtilPor.get("http://www.hecaijing.com/",RequestCount);
+        String typeid_guandian= document.select("a.active").attr("type");
+        String typeid_tuijian= documents.select("a.active").attr("type");
+        String arr[]={typeid_guandian,typeid_tuijian};
+        for(int i=0;i<arr.length;i++){
+        String jsons=HttpClientUtilPro.httpGetRequest("http://www.hecaijing.com/index/loadmore?type="+arr[i]+"&pn=1",RequestCount);
         System.out.println(jsons);
         JSONObject jsonObject=JSONObject.fromObject(jsons);
-        if(jsonObject.getString("msg").equals("success")){
-            JSONArray jsonArray=jsonObject.getJSONArray("data");
-            if(jsonArray.size()==0){
+        if(jsonObject.getString("msg").equals("success")) {
+            JSONArray jsonArray = jsonObject.getJSONArray("data");
+            if (jsonArray.size() == 0) {
                 return;
             }
 
-            for(Object o:jsonArray){
-                JSONObject jsonObject1=JSONObject.fromObject(o);
-                String title=jsonObject1.getString("title");
-                System.out.println("标题 : "+title);
+                for (Object o : jsonArray) {
+                    JSONObject jsonObject1 = JSONObject.fromObject(o);
+                    String title = jsonObject1.getString("title");
+                    System.out.println("标题 : " + title);
 
-                String summary=jsonObject1.getString("describe");
-                System.out.println("简介 : "+summary);
+                    String summary = jsonObject1.getString("describe");
+                    System.out.println("简介 : " + summary);
 
-                String  author=jsonObject1.getString("source_site");
-                System.out.println("作者 : "+author);
+                    String author = jsonObject1.getString("source_site");
+                    System.out.println("作者 : " + author);
 
-                String search_key="";
-                JSONArray jsonArray1 = jsonObject1.getJSONArray("tag");
-                for(Object o1:jsonArray1){
-                    search_key+=o1.toString()+",";
+                    String search_key = "";
+                    JSONArray jsonArray1 = jsonObject1.getJSONArray("tag");
+                    for (Object o1 : jsonArray1) {
+                        search_key += o1.toString() + ",";
+                    }
+                    if (!search_key.equals("")) {
+                        search_key = search_key.substring(0, search_key.length() - 1);
+                    }
+                    System.out.println("关键字 : " + search_key);
+                    String pic_url = jsonObject1.getString("img");
+                    System.out.println("图片地址 : " + pic_url);
+                    String href_addr = jsonObject1.getString("app_url");//新闻地址
+                    System.out.println("新闻地址 : " + href_addr);
+
+                    String PublishTime = jsonObject1.getString("publish_time");//创建时间
+                    System.out.println("更新时间 " + PublishTime);
+                    System.out.println("-------------------------------------------");
+                    String types = "观点";
+                    String from_site = author;
+                    String from_interface = "HECAIJING_NEWS";
+                    String news_type_id = "12";
+                    dbUtil.insertAndQuery("insert into news_info " +
+                            "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
+                            " values (?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr, new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface});
+
                 }
-                if(!search_key.equals("")){
-                    search_key=search_key.substring(0,search_key.length()-1);
-                }
-                System.out.println("关键字 : "+search_key);
-                String pic_url=jsonObject1.getString("img");
-                System.out.println("图片地址 : "+pic_url);
-                String href_addr=jsonObject1.getString("app_url");//新闻地址
-                System.out.println("新闻地址 : "+href_addr);
-
-                String PublishTime=jsonObject1.getString("publish_time");//创建时间
-                System.out.println("更新时间 "+PublishTime);
-                System.out.println("-------------------------------------------");
-                String types="观点";
-                String from_site=author;
-                String from_interface="HECAIJING_NEWS";
-                String news_type_id="12";
-                dbUtil.insertAndQuery( "insert into news_info " +
-                        "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
-                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface});
-
             }
+
         }
     }
 
 
 
 
-    @Test
-    //链向财经 精英视点--->深度
-    public void getLianxiangDownload(){
-            String  json=HttpClientUtilPro.httpGetRequest("https://www.chainfor.com/home/list/news/data.do?device_type=0&categoryId=11&pageNo=1",RequestCount);
-            JSONObject jsonObject=JSONObject.fromObject(json);
-            System.out.println(jsonObject);
-            JSONArray jsonArray=jsonObject.getJSONArray("list");
-            for(Object o:jsonArray){
-                JSONObject jsonObject1=JSONObject.fromObject(o);
-                String title=jsonObject1.getString("title");
-                System.out.println("标题 : "+title);
-
-                String summary=jsonObject1.getString("introduction");
-                System.out.println("简介 : "+summary);
-
-                String author=jsonObject1.getString("nickName");
-                System.out.println("作者 : "+author);
-
-                String search_key=jsonObject1.getString("lable").replace("，",",");
-                System.out.println("关键字 : "+search_key);
-
-                String pic_url="https://lianxiangfiles.oss-cn-beijing.aliyuncs.com/"+jsonObject1.getString("imgUrl")+"?x-oss-process=style/news";
-                System.out.println("图片地址 : "+pic_url);
-
-                String href_addr="https://www.chainfor.com/news/show/"+jsonObject1.getString("newDetailId")+".html";
-                System.out.println("新闻地址 : "+href_addr);
-
-                String PublishTime=jsonObject1.getJSONObject("createDate").getString("time");
-                PublishTime=DateUtil.stampToDate(PublishTime);
-                System.out.println("更新时间 "+PublishTime);
-                String types="深度";
-                String from_site=jsonObject1.getString("source");
-                System.out.println("来源 "+from_site);
-
-                String from_interface="LIANXIANG_NEWS";
-                String news_type_id="12";
-                System.out.println("--------------------------------");
-                dbUtil.insertAndQuery( "insert into news_info " +
-                        "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
-                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface});
-
-            }
-        }
+//    @Test
+//    //链向财经 精英视点--->深度
+//    public void getLianxiangDownload(){
+//        String arr[]={"https://www.chainfor.com/home/list/news/data.do","https://www.chainfor.com/home/list/news/data.do?device_type=0&categoryId=11&pageNo=1"};
+//        for(int i=0;i<arr.length;i++){
+//            //https://www.chainfor.com/home/list/news/data.do
+//            String  json=HttpClientUtilPro.httpGetRequest(arr[i],RequestCount);
+//            JSONObject jsonObject=JSONObject.fromObject(json);
+//            System.out.println(jsonObject);
+//            JSONArray jsonArray=jsonObject.getJSONArray("list");
+//            for(Object o:jsonArray){
+//                JSONObject jsonObject1=JSONObject.fromObject(o);
+//                String title=jsonObject1.getString("title");
+//                System.out.println("标题 : "+title);
+//
+//                String summary=jsonObject1.getString("introduction");
+//                System.out.println("简介 : "+summary);
+//
+//                String author=jsonObject1.getString("nickName");
+//                System.out.println("作者 : "+author);
+//
+//                String search_key=jsonObject1.getString("lable").replace("，",",");
+//                System.out.println("关键字 : "+search_key);
+//
+//                String pic_url="https://lianxiangfiles.oss-cn-beijing.aliyuncs.com/"+jsonObject1.getString("imgUrl")+"?x-oss-process=style/news";
+//                System.out.println("图片地址 : "+pic_url);
+//
+//                String href_addr="https://www.chainfor.com/news/show/"+jsonObject1.getString("newDetailId")+".html";
+//                System.out.println("新闻地址 : "+href_addr);
+//
+//                String PublishTime=jsonObject1.getJSONObject("createDate").getString("time");
+//                PublishTime=DateUtil.stampToDate(PublishTime);
+//                System.out.println("更新时间 "+PublishTime);
+//                String types="深度";
+//                String from_site=jsonObject1.getString("source");
+//                System.out.println("来源 "+from_site);
+//
+//                String from_interface="LIANXIANG_NEWS";
+//                String news_type_id="12";
+//                System.out.println("--------------------------------");
+//                dbUtil.insertAndQuery( "insert into news_info " +
+//                        "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
+//                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface});
+//
+//            }
+//        }
+//
+//        }
 
 }
 
