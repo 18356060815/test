@@ -696,7 +696,50 @@ public class DowloadPage_task {
         }
     }
 
+    //https://www.chainnews.com/ 链闻
+    @Test
+    public void lianwen(){
 
+            // https://www.chainnews.com/api/articles/?t=%E9%A1%B9%E7%9B%AE&ts=1547005264 酷项目
+            String kujson= HttpClientUtilPro.httpGetRequest("https://www.chainnews.com/api/articles/?t=%E9%A1%B9%E7%9B%AE",RequestCount);
+            JSONObject jsonObject=JSONObject.fromObject(kujson);
+            JSONArray jsonArray=jsonObject.getJSONArray("results");
+            for(Object o:jsonArray){
+                JSONObject jsonObject1=JSONObject.fromObject(o);
+                String title=jsonObject1.getString("title");
+                System.out.println("标题 "+title);
+                String author=jsonObject1.getString("author_name");
+                System.out.println("作者 "+author);
+
+                List search_keys=new ArrayList();
+                JSONArray jsonArray1=jsonObject1.getJSONArray("tag_list");
+                for(Object o1:jsonArray1){
+                    search_keys.add(JSONObject.fromObject(o1).getString("name"));
+                }
+                String search_key=CheckUtil.getSearchKey(search_keys);
+                System.out.println("关键字 "+search_key);
+
+                String summary=jsonObject1.getString("digest");
+                System.out.println("简介 "+summary);
+
+                String pic_url=jsonObject1.getString("cover_url").split("\\?")[0];
+                System.out.println("图片 "+pic_url);
+
+                String href_addr="https://www.chainnews.com"+jsonObject1.getString("absolute_url");
+                System.out.println("新闻地址 "+href_addr);
+
+                String PublishTime=DateUtil.getHecaijingLater(jsonObject1.getString("pp_time"));
+                System.out.println("更新时间 "+PublishTime);
+                String from_site="链闻";
+                String from_interface="链闻";
+                String news_type_id="12";
+                String types="公司";
+                dbUtil.insertAndQuery( "insert into news_info " +
+                        "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
+                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface});
+
+            }
+    }
 
 
 //    @Test

@@ -64,6 +64,48 @@ public class DBUtil {
     }
 
 
+
+    //通用新闻插入 并返回自增主键值 用于插入file_info
+    //有新闻就略过  没有就插入
+    public  synchronized  void  insertAndQueryCoin(String updatesql,String insertsql ,String name,String symbol,Object[] objects) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        String querysql="select id from virtual_currency_info where name=? and symbol=? ";
+        List list=jdbcTemplate.queryForList(querysql,new Object[]{name,symbol});
+        System.out.println(list);
+
+
+        if(list.size()!=0){
+            jdbcTemplate.update(updatesql);
+        }else {
+            PreparedStatementCreator preparedStatementCreator = con -> {
+                PreparedStatement ps = con.prepareStatement(insertsql, Statement.RETURN_GENERATED_KEYS);
+                for(int i=1;i<=objects.length;i++){
+                    ps.setObject(i,objects[i-1]);
+                }
+
+                return ps;
+            };
+            try {
+                jdbcTemplate.update(preparedStatementCreator,keyHolder);
+            }catch (Throwable e){
+                e.printStackTrace();
+                return;
+            }
+//            //新闻资讯的图片 插入file_info表 标签遵守原规则为:header ()
+//            Long id= keyHolder.getKey().longValue();
+//            if(!"".equals(id)&&id!=null){
+//                String insertsqls="insert into file_info (`target_table`,`target_field`,`target_id`,`file_path`) values ('virtual_currency_info','logo','"+id+"','"+imgurl+"')";
+//                jdbcTemplate.execute(insertsqls);
+//                System.out.println(insertsqls);
+//
+//            }
+
+        }
+
+    }
+
+
     /**
      *
      * 查询库中是否有币数据

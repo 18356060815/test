@@ -218,7 +218,7 @@ public class AllNewNewsInfo {
 
     }
     @Test
-    //陀螺财经
+    //陀螺财经 test
     public void Tuoluocaijing(){
         String tuo= HttpClientUtilPro.httpGetRequest("https://www.tuoluocaijing.cn/api/article/get_list?page_num=1&limit=30&toutiao=1",RequestCount);
         JSONObject jsonObject=JSONObject.fromObject(tuo);
@@ -256,6 +256,7 @@ public class AllNewNewsInfo {
             String summary=jsonObject2.getString("summary");
             System.out.println("简介 "+summary);
             String pic_url=jsonObject2.getString("thumbnail");
+            pic_url=pic_url.split("\\?")[0];
             System.out.println("图片 "+pic_url);
 
             String href_addr="https://www.tuoluocaijing.cn/article/detail-"+jsonObject2.getString("id")+".html";

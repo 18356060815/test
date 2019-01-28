@@ -68,6 +68,28 @@ public class HttpClientUtilPro {
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36");
         return getResult(httpGet,requestCount);
     }
+    /**
+     *
+     *
+     *all
+     *
+     * **/
+    public static String httpGetRequestCoin(String url,int requestCount) {
+        HttpGet httpGet = new HttpGet(url);
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
+                .build();
+        httpGet.setConfig(config);
+        httpGet.setHeader("Host", "coinmarketcap.com");
+        httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.9");
+        httpGet.setHeader("Accept-Encoding", "gzip, deflate, br");
+        httpGet.setHeader("Upgrade-Insecure-Requests", "1");
+        httpGet.setHeader("Connection", "keep-alive");
+        httpGet.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+        httpGet.setHeader("Cache-Control", "max-age=0");
+
+        return getResult(httpGet,requestCount);
+    }
 
 
 

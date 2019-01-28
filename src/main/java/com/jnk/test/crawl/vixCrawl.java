@@ -19,4 +19,8 @@ public class vixCrawl {
        System.out.println(vix);
         DBUtil.execute("update vix_data set vix='"+vix+"' where id=1");
     }
+
+    public static void main(String[] args) {
+       System.out.println(JsoupUtilPor.get("https://www.qisuu.la/du/29/29517/9598375.html",1));
+    }
 }

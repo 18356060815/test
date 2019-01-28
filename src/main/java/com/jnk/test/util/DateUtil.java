@@ -217,37 +217,37 @@ public class DateUtil {
 		String times="";
 		if(!"".equals(later)&&later!=null){
 			 if(later.contains("秒前")){
-				 later=later.replace("秒前","");
+				 later=later.replace("秒前","").trim();
 				 times=getOneHoursAgoTime("SECOND",Integer.parseInt(later));
 
 			}
 			else if(later.contains("分钟前")){
-				 later=later.replace("分钟前","");
+				 later=later.replace("分钟前","").trim();
 				 times=getOneHoursAgoTime("MINUTE",Integer.parseInt(later));
 
 			}
 			else if(later.contains("小时前")){
-				later=later.replace("小时前","");
+				later=later.replace("小时前","").trim();
 				times=getOneHoursAgoTime("HOUR",Integer.parseInt(later));
 
 
 			}else if(later.contains("天前")){
-				 later=later.replace("天前","");
+				 later=later.replace("天前","").trim();
 				 times=getOneHoursAgoTime("DATE",Integer.parseInt(later));
 
 
 			 }else if(later.contains("周前")){
-				 later=later.replace("周前","");
+				 later=later.replace("周前","").trim();
 				 times=getOneHoursAgoTime("WEDNESDAY",Integer.parseInt(later));
 
 
 			 }else if(later.contains("月前")){
-				 later=later.replace("月前","");
+				 later=later.replace("月前","").trim();
 				 times=getOneHoursAgoTime("MONTH",Integer.parseInt(later));
 
 			 }
 			 else if(later.contains("年前")){
-				 later=later.replace("年前","");
+				 later=later.replace("年前","").trim();
 				 times=getOneHoursAgoTime("YEAR",Integer.parseInt(later));
 
 			 }else {

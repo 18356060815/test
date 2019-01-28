@@ -1,62 +1,62 @@
-//package com.jnk.test.crawl;
+package com.jnk.test.crawl;
+
+import com.jnk.test.Service.DBUtil;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.io.File;
+
+public class createWordDis {
+
+    public static void main(String[] args) throws  Exception{
+        String firefoxdriver = "E:\\selenium\\geckodriver.exe";
+        String firefox = "D:\\firefox\\firefox.exe";
+        System.setProperty("webdriver.gecko.driver",firefoxdriver);
+        System.setProperty("webdriver.firefox.bin",firefox);
+        WebDriver driver = new FirefoxDriver();
+        driver.get("https://www.alipay.com/");
+        driver.findElement(By.className("personal-login")).click();
+        new Thread().sleep(2000);
+        driver.findElement(By.cssSelector("a[seed=clickMe-amButton]")).click();
+        new Thread().sleep(2000);
+        String url=driver.switchTo().frame("J_loginIframe").getPageSource();
+        System.out.println(url);
+        driver.findElement(By.className("J-input-user")).sendKeys("18356060815");
+        driver.findElement(By.id("password_rsainput")).sendKeys("a86508650");
+        new Thread().sleep(1000);
+
+        driver.findElement(By.id("J-login-btn")).click();
+
+//        WebElement source=driver.findElement(By.id("nc_1_n1z"));
+//        Actions action = new Actions(driver);
 //
-//import com.jnk.test.Service.DBUtil;
-//import org.apache.commons.lang.StringEscapeUtils;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.junit4.SpringRunner;
+//        action.clickAndHold(source).moveByOffset((int)(Math.random()*200)+80, 0);
+//        new Thread().sleep(1000);
+//        action.clickAndHold(source).moveByOffset((int)(Math.random()*200)+80, 0);
+//        new Thread().sleep(1000);
 //
-//import java.util.*;
 //
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
-//public class createWordDis {
-//
-//    @Autowired
-//    DBUtil dbUtil;
-//    @Test
-//    public  void  createWord(){
-//        List <Map<String ,Object>> list1=dbUtil.find("select symbol as name  from virtual_currency_info");
-//        List <Map<String ,Object>> list2=dbUtil.find("select name  from virtual_currency_info");
-//        List <Map<String ,Object>> list3=dbUtil.find("select name  from app_info");
-//        List <Map<String ,Object>> list4=dbUtil.find("select name  from virtual_currency_exchange_info");
-//
-//        list1.addAll(list2);
-//        list1.addAll(list3);
-//        list1.addAll(list4);
-//
-//        for(Map map:list1){
-//           String name = map.get("name").toString();
-//           System.out.println(name);
-//           name=StringEscapeUtils.escapeSql(name);
-//           dbUtil.executes(name);
-//        }
-////        List <Map<String ,Object>> list5=dbUtil.find("select  search_key  from news_info");
-////        Set<String> l=new HashSet();
-////        for(Map map:list5){
-////            Object search_key=map.get("search_key");
-////            if(search_key!=null){
-////                String [] arr=search_key.toString().split(",");
-////                for(String a:arr ){
-////                    if(a==null){
-////                        continue;
-////                    }
-////                    if(a.equals("")){
-////                        continue;
-////                    }
-////                    if(a.length()<=1){
-////                        continue;
-////                    }
-////                    l.add(a);
-////                }
-////            }
-////        }
-////        for(String name:l){
-////            name=StringEscapeUtils.escapeSql(name);
-////            System.out.println(name);
-////            dbUtil.executes(name);
-////        }
-//    }
-//}
+//        //拖动完释放鼠标
+//        action.moveToElement(source).release();
+//        //组织完这些一系列的步骤，然后开始真实执行操作
+//        Action actions = action.build();
+//        actions.perform();
+//        driver.findElement(By.id("J_SubmitStatic")).click();
+
+    }
+}

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +17,25 @@ public class CheckUtil {
     private static final Logger logger = LoggerFactory.getLogger(CheckUtil.class);
 
 
+    public static double vaildNumber(double price) {
+        String[] strs = String.valueOf(price).split("\\.");
+        if(strs.length > 0 && Long.valueOf(strs[0]) > 100 ) {
+            BigDecimal bg = new BigDecimal(price);
+            double result =  bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            return result;
+        }if(strs.length > 1 && Long.valueOf(strs[0]) == 0  && Long.valueOf(strs[1]) == 0){
+            return 0.0;
+        }else{
+            double d = Math.ceil(Math.log10(price < 0 ? -price: price));
+            int power = 4 - (int) d;
+            double magnitude = Math.pow(10, power);
+            long shifted = Math.round(price*magnitude);
+            double result = shifted/magnitude;
+            java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
+            nf.setGroupingUsed(false);
+            return result;
+        }
+    }
     public static String getTrace(Throwable t) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
