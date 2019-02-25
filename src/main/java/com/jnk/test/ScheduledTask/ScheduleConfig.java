@@ -17,6 +17,6 @@ public class ScheduleConfig implements SchedulingConfigurer {
     }
 
     public  Executor taskExecutor() {
-        return Executors.newScheduledThreadPool(50);
+        return Executors.newScheduledThreadPool(80);
     }
 }

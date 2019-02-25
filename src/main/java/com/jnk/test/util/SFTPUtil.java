@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.SocketException;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Vector;
 /**
@@ -181,17 +183,53 @@ public class SFTPUtil {
         return sftp.ls(directory);
     }
 
+//    public static FTPClient getFtpClient(String ip, int port, String username, String password) {
+//        FTPClient ftp = new FTPClient();
+//        try {
+//            ftp.connect(ip, port);// 连接FTP服务器
+//            ftp.login(username, password);// 登录
+//            int reply = ftp.getReplyCode();
+//            if (!FTPReply.isPositiveCompletion(reply)) {
+//                ftp.disconnect();
+//                System.out.println("login ftp error");
+//            }
+//            ftp.enterLocalPassiveMode();
+//            ftp.changeWorkingDirectory(FTP_BASE);
+////			System.err.println(ftp.printWorkingDirectory());
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return ftp;
+//    }
+
+//    #ftp
+//            FTP_IP=103.229.116.92
+//    FTP_PORT=21
+//    FTP_USER=ftpcaijian
+//            FTP_PASSWORD=2oKDhW5aYELM
+//            FTP_BASE=FtpUpload/
+//
+//#image server
+//    IMG_SERVER=http://admin.bee360.io/FtpUpload/
+
     //上传文件测试
+   static String folderName = "admin/images/project_info_s/" + DateUtil.ForDate(new Date(), DateUtil.YYYY_MM_DD) + "/";
+//    String fullPath = UploadFileInName(file, fileName, folderName);
+
     public static void main(String[] args) throws SftpException, IOException {
         // new SFTPUtil("root", "jnk123bee360", "103.229.116.104", 22); //新服务器
         // new SFTPUtil("root", "Yinweidong8650", "47.99.189.110", 22); //免费阿里服务器
-        SFTPUtil sftp = new SFTPUtil("root", "Yinweidong8650", "47.99.189.110", 22);
+        SFTPUtil sftp = new SFTPUtil("ftpcaijian", "2oKDhW5aYELM", "103.229.116.92", 21);
         sftp.login();
+
         //sftp.download("/usr/es-head-master/_site","app.js","D:\\centos\\1.txt");//下载
 
-        File file = new File("C:\\Users\\iui\\Desktop\\jdk-8u191-linux-x64.rpm");
+        File file = new File("C:\\1.jpg");
         InputStream is = new FileInputStream(file);
-        sftp.upload("/","/", "jdk-8u191-linux-x64.rpm", is);
+        sftp.upload("FtpUpload/",folderName, "1.jpg", is);
         sftp.logout();
+        System.out.println("http://admin.bee360.io/FtpUpload/"+folderName+"1.jpg");
     }
 }

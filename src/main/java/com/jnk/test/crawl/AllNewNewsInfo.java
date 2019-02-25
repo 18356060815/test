@@ -218,26 +218,36 @@ public class AllNewNewsInfo {
 
     }
     @Test
-    //陀螺财经 test
+    //陀螺财经 推荐  + 行情
     public void Tuoluocaijing(){
-        String tuo= HttpClientUtilPro.httpGetRequest("https://www.tuoluocaijing.cn/api/article/get_list?page_num=1&limit=30&toutiao=1",RequestCount);
-        JSONObject jsonObject=JSONObject.fromObject(tuo);
-        JSONObject jsonObject1=jsonObject.getJSONObject("data");
-        JSONArray  jsonArray=jsonObject1.getJSONArray("list");
-        for(Object o:jsonArray) {
-            JSONObject jsonObject2=JSONObject.fromObject(o);
-            if(jsonObject2.getString("is_top").equals("1")){
-                continue;
-            }
+        String url="https://www.tuoluocaijing.cn/api/article/get_list?page_num=1&limit=30&toutiao=1";
+        String urlhq="https://www.tuoluocaijing.cn/api/article/get_list?page_num=1&limit=20&column_id=26";
 
-            String title=jsonObject2.getString("title");
-            System.out.println("标题 "+title);
+        List <String>l=new ArrayList();
+        l.add(url);
+        l.add(urlhq);
+        Map <String,String>map=new HashMap();
+        map.put(url,"推荐");
+        map.put(urlhq,"行情");
+        for(String urls:l){
+            String tuo= HttpClientUtilPro.httpGetRequest(urls,RequestCount);
+            JSONObject jsonObject=JSONObject.fromObject(tuo);
+            JSONObject jsonObject1=jsonObject.getJSONObject("data");
+            JSONArray  jsonArray=jsonObject1.getJSONArray("list");
+            for(Object o:jsonArray) {
+                JSONObject jsonObject2=JSONObject.fromObject(o);
+                if(jsonObject2.getString("is_top").equals("1")){
+                    continue;
+                }
 
-            String author=jsonObject2.getString("edit_name");
-            System.out.println("作者 "+author);
+                String title=jsonObject2.getString("title");
+                System.out.println("标题 "+title);
+
+                String author=jsonObject2.getString("edit_name");
+                System.out.println("作者 "+author);
 
 
-            String search_key="";
+                String search_key="";
 //            if(!jsonArrays1.equals(null)){
 //                JSONArray jsonArrays=JSONArray.fromObject(jsonArrays1);
 //                for(Object oi:jsonArrays){
@@ -251,27 +261,29 @@ public class AllNewNewsInfo {
 //            if(!search_key.equals("")){
 //                search_key=search_key.substring(0,search_key.length()-1);
 //            }
-            System.out.println("关键字 "+search_key);
+                System.out.println("关键字 "+search_key);
 
-            String summary=jsonObject2.getString("summary");
-            System.out.println("简介 "+summary);
-            String pic_url=jsonObject2.getString("thumbnail");
-            pic_url=pic_url.split("\\?")[0];
-            System.out.println("图片 "+pic_url);
+                String summary=jsonObject2.getString("summary");
+                System.out.println("简介 "+summary);
+                String pic_url=jsonObject2.getString("thumbnail");
+                pic_url=pic_url.split("\\?")[0];
+                System.out.println("图片 "+pic_url);
 
-            String href_addr="https://www.tuoluocaijing.cn/article/detail-"+jsonObject2.getString("id")+".html";
-            System.out.println("新闻地址 "+href_addr);
+                String href_addr="https://www.tuoluocaijing.cn/article/detail-"+jsonObject2.getString("id")+".html";
+                System.out.println("新闻地址 "+href_addr);
 
-            String PublishTime=jsonObject2.getString("audit_time");
-            System.out.println("更新时间 "+PublishTime);
+                String PublishTime=jsonObject2.getString("audit_time");
+                System.out.println("更新时间 "+PublishTime);
 
-            String from_site="陀螺财经";
-            String from_interface="陀螺财经";
-            String news_type_id="12";
-            dbUtil.insertAndQuery( "insert into news_info " +
-                    "(`status`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
-                    " values (?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface});
+                String types=map.get(urls);
+                String from_site="陀螺财经";
+                String from_interface="陀螺财经";
+                String news_type_id="12";
+                dbUtil.insertAndQuery( "insert into news_info " +
+                        "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`)" +
+                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface});
 
+            }
         }
      }
 
@@ -281,57 +293,62 @@ public class AllNewNewsInfo {
     @Test
     //深链财经 推荐 最新
     public void shenliancaijing(){
+            int arr[]={8,9};
+            for(int i=0;i<arr.length;i++){
+                Map map=new HashMap();
+                map.put("id",arr[i]);
+                map.put("limit",40);
+                map.put("page",1);
+                //id=8&limit=12&page=3
+                Map map1=new HashMap();
+                map1.put("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
+                map1.put("origin","https://www.shenliancaijing.com");
 
-            Map map=new HashMap();
-            map.put("id",8);
-            map.put("limit",40);
-            map.put("page",1);
-            //id=8&limit=12&page=3
-            String data=HttpClientUtilPro.httpPostRequest("https://www.shenliancaijing.com/portal/index/centerporApi",map,RequestCount);
-            JSONObject jsonObject=JSONObject.fromObject(data);
-            System.out.println(jsonObject);
-            if(jsonObject.getString("code").equals("202")){
-                return;
+                String data=HttpClientUtilPro.httpPostRequest("https://www.shenliancaijing.com/portal/index/centerporApi",map1,map,RequestCount);
+                JSONObject jsonObject=JSONObject.fromObject(data);
+                System.out.println(jsonObject);
+                if(jsonObject.getString("code").equals("202")){
+                    return;
+                }
+                JSONArray jsonArray=jsonObject.getJSONArray("data");
+                for(Object o:jsonArray){
+                    JSONObject jsonObject2=JSONObject.fromObject(o);
+                    String title=jsonObject2.getString("post_title");
+                    System.out.println("标题 "+title);
+
+                    String author=jsonObject2.getString("post_source");
+                    System.out.println("作者 "+author);
+
+                    String search_key="";
+                    System.out.println("关键字 "+search_key);
+
+                    String summary=jsonObject2.getString("post_excerpt");
+                    System.out.println("简介 "+summary);
+
+                    String pic_url="https://www.shenliancaijing.com/upload/"+jsonObject2.getString("pic");
+                    System.out.println("图片 "+pic_url);
+
+                    String href_addr="https://www.shenliancaijing.com"+jsonObject2.getString("url");
+                    System.out.println("新闻地址 "+href_addr);
+
+                    String PublishTime=jsonObject2.getString("published_time");
+                    PublishTime=getHecaijingLater(PublishTime);
+                    System.out.println("更新时间2 "+PublishTime);
+                    String types=null;
+                    if(arr[i]==9){
+                        types="公司";
+                    }
+                    String from_site="深链财经";
+                    String from_interface="深链财经";
+                    String news_type_id="12";
+                    dbUtil.insertAndQuery( "insert into news_info " +
+                            "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                            " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+
+
+                }
             }
-            JSONArray jsonArray=jsonObject.getJSONArray("data");
-
-            for(Object o:jsonArray){
-                JSONObject jsonObject2=JSONObject.fromObject(o);
-                String title=jsonObject2.getString("post_title");
-                System.out.println("标题 "+title);
-
-                String author=jsonObject2.getString("post_source");
-                System.out.println("作者 "+author);
-
-                String search_key="";
-                System.out.println("关键字 "+search_key);
-
-                String summary=jsonObject2.getString("post_excerpt");
-                System.out.println("简介 "+summary);
-
-                String pic_url="https://www.shenliancaijing.com/upload/"+jsonObject2.getString("pic");
-                System.out.println("图片 "+pic_url);
-
-                String href_addr="https://www.shenliancaijing.com"+jsonObject2.getString("url");
-                System.out.println("新闻地址 "+href_addr);
-
-                String PublishTime=jsonObject2.getString("published_time");
-                PublishTime=getHecaijingLater(PublishTime);
-                System.out.println("更新时间2 "+PublishTime);
-
-                String from_site="深链财经";
-                String from_interface="深链财经";
-                String news_type_id="12";
-                dbUtil.insertAndQuery( "insert into news_info " +
-                        "(`status`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
-                        " values (?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
-
-
-            }
-
-
-
-        }
+    }
     //鸵鸟区块链
     @Test
     public void tuoniaoqukuailiang(){

@@ -42,6 +42,33 @@ public class JsoupUtilPor {
         return document;
 
     }
+
+    public  static Document ignoreget(String url,int requstCount){
+        if(requstCount==3){
+            return null;
+        }
+        Document document;
+        try {
+            requstCount++;
+            Connection.Response response =Jsoup.connect(url).ignoreContentType(true).header("User-Agent",User_Agent).timeout(TIME_OUT).execute();
+            int statusLine=response.statusCode();
+            if(statusLine!=200) {
+                CheckUtil.sleep(2000);
+                document = get(url, requstCount);
+
+            }else {
+                document=response.parse();
+            }
+        }catch (Throwable e){
+            logger.error(getTrace(e));
+            CheckUtil.sleep(2000);
+            document=get(url,requstCount);
+
+        }
+        return document;
+
+    }
+
     public  static Document post(String url,Map map) {//
         Document document;
         try {

@@ -158,7 +158,7 @@ public class CheckUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(stampToDate("1542162345",true));
+        System.out.println(37%40);
     }
 
 

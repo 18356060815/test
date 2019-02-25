@@ -2,6 +2,7 @@ package com.jnk.test.util;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -9,6 +10,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClients;
@@ -17,9 +25,19 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.jnk.test.util.CheckUtil.getTrace;
@@ -51,7 +69,23 @@ public class HttpClientUtilPro {
     }
 
 
+    /**
+     *
+     *
+     *all  币的合约== tokenview
+     *
+     * **/
+    public static String httpGetRequest(String url,int requestCount,String ref) {
+        HttpGet httpGet = new HttpGet(url);
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(TIME_OUT).setSocketTimeout(TIME_OUT)
+                .build();
+        httpGet.setConfig(config);
+        httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36");
+        httpGet.setHeader("Referer", ref);
 
+        return getResults(httpGet,requestCount);
+    }
 
     /**
      *
@@ -241,12 +275,20 @@ public class HttpClientUtilPro {
                 }
             }
 
-        } catch (Throwable e) {
-            logger.error(getTrace(e));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("异常!重试中......");
             CheckUtil.sleep(2000);
-            response.close();
-            logger.info("异常!重试中......");
+            if(response!=null){
+                response.close();
+            }
             EMPTY_STR=getResult(request,requestCount);
+
+//            e.printStackTrace();
+//            CheckUtil.sleep(2000);
+//            response.close();
+//            logger.info("异常!重试中......");
+//            EMPTY_STR=getResult(request,requestCount);
         }  finally {
             return EMPTY_STR;
 
@@ -255,6 +297,154 @@ public class HttpClientUtilPro {
     }
 
 
+
+    /**
+     *
+     * 币的hash地址util
+     * @param request
+     * @return
+     */
+    private static String getResults(HttpRequestBase request,int requestCount) {
+        if(requestCount==3){
+            return null;
+        }
+        String EMPTY_STR = null;
+        // CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = getHttpClient();
+        CloseableHttpResponse response=null;
+        try {
+            requestCount++;
+            response = httpClient.execute(request);
+            int statusLine=response.getStatusLine().getStatusCode();
+            System.out.println(statusLine);
+            if(statusLine!=200){
+                return  null;
+            }else {
+                // response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    // long len = entity.getContentLength();// -1 表示长度未知
+                    EMPTY_STR = EntityUtils.toString(entity);
+                    response.close();
+                    //httpClient.close();
+                    return EMPTY_STR;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("异常!重试中......");
+            CheckUtil.sleep(2000);
+            if(response!=null){
+                response.close();
+            }
+            EMPTY_STR=getResult(request,requestCount);
+
+//            e.printStackTrace();
+//            CheckUtil.sleep(2000);
+//            response.close();
+//            logger.info("异常!重试中......");
+//            EMPTY_STR=getResult(request,requestCount);
+        }  finally {
+            return EMPTY_STR;
+
+        }
+
+    }
+
+
+    /**
+     * 绕过验证
+     *
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     */
+    public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sc = SSLContext.getInstance("SSLv3");
+
+        // 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+
+            @Override
+            public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        };
+
+        sc.init(null, new TrustManager[] { trustManager }, null);
+        return sc;
+    }
+
+    /**
+     * 模拟请求
+     *
+     * @param url		资源地址
+
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     * @throws IOException
+     * @throws ClientProtocolException
+     */
+    public static String send(String url,int requestCount,String ref) throws KeyManagementException, NoSuchAlgorithmException, ClientProtocolException, IOException {
+        String body = "";
+
+        //采用绕过验证的方式处理https请求
+        SSLContext sslcontext = createIgnoreVerifySSL();
+
+        //设置协议http和https对应的处理socket链接工厂的对象
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(sslcontext))
+                .build();
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        HttpClients.custom().setConnectionManager(connManager);
+
+
+        //创建自定义的httpclient对象
+        CloseableHttpClient client = HttpClients.custom().setConnectionManager(connManager).build();
+        //CloseableHttpClient client = HttpClients.createDefault();
+
+        try{
+            //创建get方式请求对象
+            HttpGet get = new HttpGet(url);
+
+            //指定报文头Content-type、User-Agent
+            get.setHeader("Content-type", "application/x-www-form-urlencoded");
+            get.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2");
+            get.setHeader("Referer", ref);
+
+            //执行请求操作，并拿到结果（同步阻塞）
+            CloseableHttpResponse response = client.execute(get);
+
+            //获取结果实体
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                //按指定编码转换结果实体为String类型
+                body = EntityUtils.toString(entity, "UTF-8");
+            }
+
+            EntityUtils.consume(entity);
+            //释放链接
+            response.close();
+            System.out.println("body:" + body);
+        } finally{
+            client.close();
+        }
+        return  body;
+    }
 
 
 
