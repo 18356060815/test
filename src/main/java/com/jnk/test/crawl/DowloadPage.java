@@ -57,7 +57,6 @@ public class DowloadPage {
             for(Object obj:jsonArray1) {
                     try {
                         JSONObject jsonObject1 = JSONObject.fromObject(obj);
-                        System.out.println(jsonObject1);
 
                         JSONObject jsonObject2 = jsonObject1.getJSONObject("ArticleInfo");
                         String types = key;//标签词
@@ -122,7 +121,6 @@ public class DowloadPage {
             System.out.println(key);
             String rs=HttpClientUtilPro.httpGetRequest("https://app.blockmeta.com/w1/news/list?post_type=post&num=1000000&cat_id="+id,RequestCount);
             JSONObject jsonObject1=JSONObject.fromObject(rs);
-            System.out.println(jsonObject1);
             JSONArray jsonArray1=jsonObject1.getJSONArray("list");
              for(Object  obj:jsonArray1){
                  try {
@@ -209,7 +207,6 @@ public class DowloadPage {
 
                                         String search_key="";//标签 xx,xx,xx
                                         search_key=search_key.replace("'","\\'");
-                                        System.out.println(jsonObject2);
                                         String summary=jsonObject2.getJSONObject("extra").getString("summary");//简介
                                         summary=summary.replace("'","\\'");
 
@@ -251,7 +248,6 @@ public class DowloadPage {
         Document document = JsoupUtilPor.get("http://www.huoxing24.com/",RequestCount);
         Elements elements = document.select("ul#newsTabs").select("li");
         for (Element element : elements) {
-            System.out.println(element);
             String key = element.text();
             System.out.println(key);
             if (key.equals("最新") || key.equals("推荐") || key.equals("头条")|| key.equals("火星号")) {
@@ -261,7 +257,6 @@ public class DowloadPage {
 
 
             Element element1 = document.select("div#loadMore" + id).get(0);//找到标签id所在的div
-            System.out.println(element1);
             String times = element1.attr("data-refreshtime");
             String page = element1.attr("data-pagecount");//data-pagecount
             System.out.println("时间:" + times + ":时间");
@@ -278,7 +273,6 @@ public class DowloadPage {
                 String x = HttpClientUtilPro.httpGetRequest(url,RequestCount);
 
                 JSONObject jsonObject = JSONObject.fromObject(x);
-                System.out.println(jsonObject);
 
                 JSONObject jsonObject1 = jsonObject.getJSONObject("obj");
                 JSONArray jsonArray = jsonObject1.getJSONArray("inforList");
@@ -299,7 +293,6 @@ public class DowloadPage {
                         search_key=search_key.replace("'","\\'");
                         System.out.println("标签 : "+search_key);
 
-                        System.out.println(jsonObject2);
                         String summary=jsonObject2.getString("synopsis");//简介
                         summary=summary.replace("'","\\'");
                         System.out.println("简介 : "+summary);
@@ -369,7 +362,6 @@ public class DowloadPage {
                JSONArray jsonArray1=jsonObject2.getJSONObject("data").getJSONObject("medias").getJSONArray("list");
                for(Object  object:jsonArray1){
                    JSONObject jsonObject3=JSONObject.fromObject(object);
-                   System.out.println(jsonObject3);
 
                    String types=key;//标签词
                    System.out.println("标签词 : "+types);
@@ -559,23 +551,7 @@ public class DowloadPage {
 
     }
 
-    //火讯财经
-    @Test
-    public void HuoxunDownloadPage(){
-        Document html=JsoupUtilPor.get("https://huoxun.com/",RequestCount);
-        System.out.println(html);
-        Elements elements=html.select("ul.getlist").select("li");
-        for(Element element:elements){
-            if(dbUtil.queryIsexists(element.text().trim())||CheckUtil.Sign(element.text().trim())) {//判断是否在标签库  或者 是否是推荐最新头条
-                //while
-                String id=element.attr("data-cid");
-                String url="https://huoxun.com/api/getlist/"+id+"?"+"page=1";
 
-            }
-
-        }
-
-    }
 
     //知乎 区块链  比特币 话题资讯文章
     @Test
@@ -590,7 +566,6 @@ public class DowloadPage {
             while (true){
                 String zhihu=HttpClientUtilPro.httpGetRequest(s,RequestCount);
                 JSONObject jsonObject=JSONObject.fromObject(zhihu);
-                System.out.println(jsonObject);
                 JSONObject nextjson=jsonObject.getJSONObject("paging");
 
                 if(nextjson.getString("is_end").equals("false")){
@@ -736,7 +711,6 @@ public class DowloadPage {
         Document document=JsoupUtilPor.get("http://www.hecaijing.com/shendu/",RequestCount);
         String typeid= document.select("a.active").attr("type");
         String jsons=HttpClientUtilPro.httpGetRequest("http://www.hecaijing.com/index/loadmore?type="+typeid+"&pn="+i,RequestCount);
-        System.out.println(jsons);
         JSONObject jsonObject=JSONObject.fromObject(jsons);
         if(jsonObject.getString("msg").equals("success")){
             JSONArray jsonArray=jsonObject.getJSONArray("data");
@@ -849,7 +823,6 @@ public class DowloadPage {
             map.put("page",i);
             String  document= HttpClientUtilPro.httpPostRequest("https://api.walian.cn/api/article-lists",map,RequestCount);
             JSONObject jsonObject=JSONObject.fromObject(document);
-            System.out.println(jsonObject);
             JSONObject jsonObject1=jsonObject.getJSONObject("data");
             JSONArray jsonArray=jsonObject1.getJSONArray("list");
             for(Object o:jsonArray){

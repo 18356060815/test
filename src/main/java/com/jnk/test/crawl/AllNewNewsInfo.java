@@ -224,8 +224,8 @@ public class AllNewNewsInfo {
         String urlhq="https://www.tuoluocaijing.cn/api/article/get_list?page_num=1&limit=20&column_id=26";
 
         List <String>l=new ArrayList();
-        l.add(url);
         l.add(urlhq);
+        l.add(url);
         Map <String,String>map=new HashMap();
         map.put(url,"推荐");
         map.put(urlhq,"行情");
@@ -293,7 +293,7 @@ public class AllNewNewsInfo {
     @Test
     //深链财经 推荐 最新
     public void shenliancaijing(){
-            int arr[]={8,9};
+            int arr[]={9,8};
             for(int i=0;i<arr.length;i++){
                 Map map=new HashMap();
                 map.put("id",arr[i]);
@@ -341,13 +341,16 @@ public class AllNewNewsInfo {
                     String from_site="深链财经";
                     String from_interface="深链财经";
                     String news_type_id="12";
+                    System.out.println("类型 : "+types);
+
                     dbUtil.insertAndQuery( "insert into news_info " +
                             "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
                             " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+                    System.out.println("-----------------------");
 
 
                 }
-            }
+          }
     }
     //鸵鸟区块链
     @Test
@@ -391,6 +394,4 @@ public class AllNewNewsInfo {
 
         }
     }
-
-
 }

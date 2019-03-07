@@ -45,6 +45,7 @@ public class DBUtil {
                 try {
                     jdbcTemplate.update(preparedStatementCreator,keyHolder);
                 }catch (Throwable e){
+                    e.printStackTrace();
                     CheckUtil.getTrace(e);
                     return;
                 }
