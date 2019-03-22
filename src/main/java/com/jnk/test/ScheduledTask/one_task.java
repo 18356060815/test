@@ -1,10 +1,13 @@
 package com.jnk.test.ScheduledTask;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jnk.test.TestApplication;
 import com.jnk.test.crawl.DowloadPage;
 import com.jnk.test.crawl.DowloadPage_task;
 import com.jnk.test.util.CheckUtil;
 import com.jnk.test.Service.DBUtil;
+import com.jnk.test.util.HttpClientUtilPro;
+import com.jnk.test.util.MD5;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.omg.CORBA.PUBLIC_MEMBER;
@@ -19,8 +22,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.jnk.test.crawl.vixCrawl.md5;
 
 /**
  *
@@ -63,5 +69,47 @@ public class one_task {
 //
 //        }
 //    }
+
+    public static void main(String[] args) {
+//        //wx735e0203cd994b90
+//        //73a1ee6f106c999973df184c80350cb3
+//
+//        String data= HttpClientUtilPro.httpGetRequest("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx735e0203cd994b90&secret=73a1ee6f106c999973df184c80350cb3",1);
+//        JSONObject jsonObject=JSONObject.fromObject(data);
+//        String access_token=jsonObject.getString("access_token");
+//        //ACCESS_TOKEN
+//        System.out.println(access_token);
+//
+//        String data1= HttpClientUtilPro.httpGetRequest("https://api.weixin.qq.com/cgi-bin/get_current_autoreply_info?access_token="+access_token,1);
+//
+//        System.out.println(data1);
+        //PAY SUCCESS 成功
+//        Map<String ,Object > map =new HashMap();
+//        map.put("amount","100");
+//        map.put("appid","wx9dda0127a53865e8");
+//        map.put("desc","bee360");
+//        map.put("openid","oQmEa0tNqx71UdiyRpo2Jahl5xcw");
+//        map.put("orderno","20190309061500105603");
+//        String plainText=map.get("amount").toString()+map.get("appid").toString()+map.get("desc").toString()+"OMSRN0Pl32rzIRkrOsIg4ADAevfF4Rv0J"+map.get("openid").toString()+map.get("orderno").toString();
+//        map.put("sign",MD5.GetMD5Code(plainText));
+//
+//        String data=HttpClientUtilPro.httpPostRequest("https://dayou.liangxinloan.com/common/dayou/promotiontrans",map,1);
+//        System.out.println(data);
+
+        Map<String ,Object > querymap =new HashMap();
+        querymap.put("orderno","2019030905054095173");
+        querymap.put("appid","wx9dda0127a53865e8");
+        String plainTexts=querymap.get("appid").toString()+"OMSRN0Pl32rzIRkrOsIg4ADAevfF4Rv0J"+querymap.get("orderno").toString();
+        System.out.println("前 "+plainTexts);
+        querymap.put("sign", MD5.GetMD5Code(plainTexts));
+        System.out.println("后 "+querymap.get("sign"));
+
+        String querydata= HttpClientUtilPro.httpPostRequest("https://dayou.liangxinloan.com/common/dayou/querypromotiontrans",querymap,1);
+
+        JSONObject jsonObject = JSONObject.parseObject(querydata);
+        System.out.println(jsonObject);
+
+        //https://dayou.liangxinloan.com/common/dayou/querypromotiontrans
+    }
 
 }

@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
@@ -445,6 +444,105 @@ public class HttpClientUtilPro {
         }
         return  body;
     }
+
+
+    /**
+     * 模拟请求
+     *
+     * @param url		资源地址
+
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     * @throws IOException
+     * @throws ClientProtocolException
+     */
+    public static String sendvedio(String url,String localFileName) throws KeyManagementException, NoSuchAlgorithmException, ClientProtocolException, IOException {
+        String body = "";
+
+        //采用绕过验证的方式处理https请求
+        SSLContext sslcontext = createIgnoreVerifySSL();
+
+        //设置协议http和https对应的处理socket链接工厂的对象
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(sslcontext))
+                .build();
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        HttpClients.custom().setConnectionManager(connManager);
+
+
+        //创建自定义的httpclient对象
+        CloseableHttpClient client = HttpClients.custom().setConnectionManager(connManager).build();
+        //CloseableHttpClient client = HttpClients.createDefault();
+
+        OutputStream out = null;
+        InputStream in = null;
+        try{
+            //创建get方式请求对象
+            HttpGet get = new HttpGet(url);
+
+            //指定报文头Content-type、User-Agent
+            get.setHeader("Content-type", "application/x-www-form-urlencoded");
+            get.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2");
+
+            //执行请求操作，并拿到结果（同步阻塞）
+            CloseableHttpResponse response = client.execute(get);
+
+            //获取结果实体
+            HttpEntity entity = response.getEntity();
+
+            in = entity.getContent();
+
+            long length = entity.getContentLength();
+            if (length <= 0) {
+                System.out.println("下载文件不存在！");
+                return null;
+            }
+
+
+            File file = new File(localFileName);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            out = new FileOutputStream(file);
+            byte[] buffer = new byte[4096];
+            int readLength = 0;
+            while ((readLength=in.read(buffer)) > 0) {
+                    byte[] bytes = new byte[readLength];
+                    System.arraycopy(buffer, 0, bytes, 0, readLength);
+                    out.write(bytes);
+                    out.flush();
+            }
+
+//
+//            if (entity != null) {
+//                //按指定编码转换结果实体为String类型
+//                body = EntityUtils.toString(entity, "UTF-8");
+//            }
+
+//            EntityUtils.consume(entity);
+            //释放链接
+            response.close();
+           // System.out.println("body:" + body);
+        } finally{
+            client.close();
+            try{
+            if(in != null){
+                in.close();
+            }
+            if(out != null){
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        }
+        return  body;
+    }
+
+
 
 
 
