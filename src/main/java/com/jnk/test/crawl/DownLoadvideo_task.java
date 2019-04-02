@@ -2,8 +2,6 @@ package com.jnk.test.crawl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.jnk.test.util.DownloadVideo;
-import com.jnk.test.util.FtpUtil;
 import com.jnk.test.util.HttpClientUtilPro;
 import org.junit.Test;
 import org.junit.runner.RunWith;

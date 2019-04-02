@@ -1,0 +1,43 @@
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-5] c.j.t.S.ScheduledTest_Reserve            : 币行情---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-6] c.j.t.S.ScheduledTest_Reserve            : 深链财经---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-1] c.j.t.S.ScheduledTest_Reserve            : Fintech News---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-10] c.j.t.S.ScheduledTest_Reserve            : 金色财经新闻开始---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-8] c.j.t.S.ScheduledTest_Reserve            : 链得得应用 + 政策---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-24] c.j.t.S.ScheduledTest_Reserve            : 链氪财经---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-18] c.j.t.S.ScheduledTest_Reserve            : 链向财经---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-20] c.j.t.S.ScheduledTest_Reserve            : 知乎资讯开始---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-21] c.j.t.S.ScheduledTest_Reserve            : 链闻公司---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-3] c.j.t.S.ScheduledTest_Reserve            : 陀螺财经---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-16] c.j.t.S.ScheduledTest_Reserve            : 火星财经新闻开始---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-22] c.j.t.S.ScheduledTest_Reserve            : 未来财经---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-13] c.j.t.S.ScheduledTest_Reserve            : 布洛克科技---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-17] c.j.t.S.ScheduledTest_Reserve            : 金牛财经新闻开始---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-14] c.j.t.S.ScheduledTest_Reserve            : 巴比特新闻开始---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-7] c.j.t.S.ScheduledTest_Reserve            : bitcoin86---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-2] c.j.t.S.ScheduledTest_Reserve            : 小葱---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-11] c.j.t.S.ScheduledTest_Reserve            : 火讯财经---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-23] c.j.t.S.ScheduledTest_Reserve            : 核财经 深度----观点---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-19] c.j.t.S.ScheduledTest_Reserve            : 鸵鸟区块链---------------------------------
+2019-04-02 13:20:20.620 ERROR 2188 --- [pool-1-thread-4] c.j.t.S.ScheduledTest_Reserve            : 挖链网推荐---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-12] c.j.t.S.ScheduledTest_Reserve            : 恐慌指数开始---------------------------------
+2019-04-02 13:20:20.621 ERROR 2188 --- [pool-1-thread-15] c.j.t.S.ScheduledTest_Reserve            : 星球日报---------------------------------
+2019-04-02 13:20:21.557 ERROR 2188 --- [pool-1-thread-14] o.s.s.s.TaskUtils$LoggingErrorHandler    : Unexpected error occurred in scheduled task.
+
+java.lang.StringIndexOutOfBoundsException: String index out of range: -26
+	at java.lang.String.substring(String.java:1967) ~[na:1.8.0_131]
+	at com.jnk.test.crawl.DowloadPage_task.BabiteDownloadPage(DowloadPage_task.java:153) ~[classes/:na]
+	at com.jnk.test.ScheduledTask.ScheduledTest_Reserve.babite_task(ScheduledTest_Reserve.java:39) ~[classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_131]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:1.8.0_131]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:1.8.0_131]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[na:1.8.0_131]
+	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:84) ~[spring-context-5.0.9.RELEASE.jar:5.0.9.RELEASE]
+	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54) ~[spring-context-5.0.9.RELEASE.jar:5.0.9.RELEASE]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511) [na:1.8.0_131]
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308) [na:1.8.0_131]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180) [na:1.8.0_131]
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294) [na:1.8.0_131]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [na:1.8.0_131]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [na:1.8.0_131]
+	at java.lang.Thread.run(Thread.java:748) [na:1.8.0_131]
+

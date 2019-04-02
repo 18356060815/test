@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration
 @ComponentScan(basePackages = "com.jnk.*")
 public class ScheduledTest_Reserve  {
+/*
     @Autowired
     AllNewNewsInfo allNewNewsInfo;
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTest_Reserve.class);
@@ -204,5 +205,6 @@ public class ScheduledTest_Reserve  {
 //        logger.error("公链信息---------------------------------");
 //        coinDownload.getCoin();
 //    }
+*/
 
 }
