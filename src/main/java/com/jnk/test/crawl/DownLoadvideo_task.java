@@ -1,10 +1,13 @@
 package com.jnk.test.crawl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jnk.test.util.DownloadVideo;
 import com.jnk.test.util.FtpUtil;
 import com.jnk.test.util.HttpClientUtilPro;
+import com.jnk.test.util.JsoupUtilPor;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,6 +70,30 @@ public class DownLoadvideo_task {
              HttpClientUtilPro.sendvedio(AudioAndVideoUrl,"F://"+data2.getString("ID")+".mp4");
 
 
+         }
+
+     }
+
+     @Test
+     public void  gethecaijingVedio(){
+         Document document = JsoupUtilPor.get("https://www.hecaijing.com/shipin/", 1);
+         String type=document.select("ul.sub-head").select("a.active").attr("type");
+
+         for(int i=1;i<100;i++){
+             String data = HttpClientUtilPro.httpGetRequest("https://www.hecaijing.com/index/loadmore?type=" + type + "&pn=" + i, 1);
+             System.out.println(data);
+             JSONObject jsonObject = JSONObject.parseObject(data);
+             JSONArray data1 = jsonObject.getJSONArray("data");
+             for(Object object:data1){
+                 JSONObject jsonObject1 = JSONObject.parseObject(object.toString());
+                 String title=jsonObject1.getString("title");//标题
+                 String summary=jsonObject1.getString("describe");//简介
+                 String videoUrl=jsonObject1.getString("videoUrl");//视频地址
+
+
+
+             }
+             System.exit(0);
          }
 
      }
