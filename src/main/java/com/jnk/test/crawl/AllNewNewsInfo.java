@@ -36,10 +36,10 @@ public class AllNewNewsInfo {
     //巴比特  最新数据更新
     @Test
     public void BabiteDownloadPage(){
-            String rs= HttpClientUtilPro.httpGetRequest("https://app.blockmeta.com/w1/news/list?post_type=post&num=50",RequestCount);
+            String rs= HttpClientUtilPro.httpGetRequest("https://webapi.8btc.com/bbt_api/news/list?num=30",RequestCount);
             JSONObject jsonObject1=JSONObject.fromObject(rs);
             System.out.println(jsonObject1);
-            JSONArray jsonArray1=jsonObject1.getJSONArray("list");
+            JSONArray jsonArray1=jsonObject1.getJSONObject("data").getJSONArray("list");
             for(Object  obj:jsonArray1){
                 try {
                     JSONObject jsonObject2=JSONObject.fromObject(obj);

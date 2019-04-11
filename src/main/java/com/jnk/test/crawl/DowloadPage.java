@@ -19,6 +19,7 @@ import redis.clients.jedis.Jedis;
 import java.io.IOException;
 import java.util.*;
 
+import static com.jnk.test.util.CheckUtil.getTrace;
 import static com.jnk.test.util.DateUtil.getHecaijingLater;
 import static com.jnk.test.util.DateUtil.getLiandedeLater;
 import static com.jnk.test.util.DateUtil.getOneHoursAgoTime;
@@ -95,71 +96,69 @@ public class DowloadPage {
         }
     }
 
-    public void BabiteDownloadPage(){
-         ///巴比特 带标签数据 all  BABITE_NEWS
-        Document document=null;
-        try {
-             document= Jsoup.connect("https://www.8btc.com").header("Referer","https://www.baidu.com/link?url=SpSgaS4MWk768w7_yN7yq2SyBAG_7MkeJGQpmFq2QLi&wd=&eqid=b6a850830001a7a7000000045bd4041d").get();
-        }catch (IOException e){
-                e.printStackTrace();
-        }
-        if (document==null)
-            return;
-        Elements elements=document.select("script");
-        Element element=elements.get(elements.size()-4);
-        String  item=element.html();
+    @Test
+    public void BabiteDownloadPage() {
+        ///巴比特 矿业全部
+        //19
+        for(int i=1;i<30;i++){
+            String data = HttpClientUtilPro.httpGetRequest("https://webapi.8btc.com/bbt_api/news/list?num=20&page="+i+"&cat_id=6", RequestCount);
+            JSONObject jsonObject3 = JSONObject.fromObject(data);
+            JSONArray jsonArray2 = jsonObject3.getJSONObject("data").getJSONArray("list");
+            for (Object obj : jsonArray2) {
+                try {
+                    JSONObject jsonObject2 = JSONObject.fromObject(obj);
+                    String types = "挖矿";//标签词
+                    String title = jsonObject2.getString("title");//标题
+                    System.out.println("标题 : "+title);
+                    String author = jsonObject2.getJSONObject("author_info").getString("display_name");//作者
+                    System.out.println("作者 : "+author);
 
-        JSONObject json_b= JSONObject.fromObject(item.substring(25,item.indexOf(";(function(){var s")));
-        JSONArray jsonArray=json_b.getJSONObject("menu").getJSONArray("news");
-        for(int i=1;i<jsonArray.size();i++){
-            JSONObject jsonObject=JSONObject.fromObject(jsonArray.getJSONObject(i));
-            String key=jsonObject.getString("name");
-            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")) {
-                continue;
+                    JSONArray tags = jsonObject2.getJSONArray("tags");//标签
+                    List list=new ArrayList();
+                    for(Object object:tags){
+                        JSONObject jsonObject = JSONObject.fromObject(object);
+                        list.add(jsonObject.getString("name"));
+
+                    }
+                    String search_key =CheckUtil.getSearchKey(list);
+                    System.out.println("关键字 : " + search_key);
+
+                    String summary = jsonObject2.getString("desc");//简介
+                    System.out.println("简介 : "+summary);
+
+                    String pic_url = jsonObject2.getString("image");//图片链接
+                    System.out.println("图片链接 : "+pic_url);
+
+                    String href_addr = "https://www.8btc.com/article/" + jsonObject2.getString("id");//新闻内容地址
+                    System.out.println("新闻内容地址 : "+href_addr);
+
+                    String PublishTime = jsonObject2.getString("post_date_format");//publishtime
+                    if (PublishTime == null || PublishTime.equals("")) {
+                        PublishTime = CheckUtil.dateToString(new Date());//publishtime
+
+                    }
+                    System.out.println("publishtime : "+PublishTime);
+
+                    if (title != null && summary != null && pic_url != null && href_addr != null && author != null) {
+                        String from_site = author;
+                        String from_interface = "BABITE_NEWS";
+
+                        dbUtil.insertAndQuery("insert into news_info " +
+                                "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]{"up", "12", types, title, author, search_key, summary, pic_url, href_addr, PublishTime, from_site, from_interface,PublishTime});
+
+                        //"('up','" + 12 + "','" + types + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','BABITE_NEWS');", title,href_addr);
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
+
             }
-            String id=jsonObject.getString("id");
-            System.out.println(key);
-            String rs=HttpClientUtilPro.httpGetRequest("https://app.blockmeta.com/w1/news/list?post_type=post&num=1000000&cat_id="+id,RequestCount);
-            JSONObject jsonObject1=JSONObject.fromObject(rs);
-            JSONArray jsonArray1=jsonObject1.getJSONArray("list");
-             for(Object  obj:jsonArray1){
-                 try {
-                     JSONObject jsonObject2=JSONObject.fromObject(obj);
-                     String types=key;//标签词
-                     String title=jsonObject2.getString("title");//标题
-                     title=title.replace("'","\\'");
-                     String author=jsonObject2.getJSONObject("author_info").getString("display_name");//作者
-                     author=author.replace("'","\\'");
-
-                     String search_key="";//标签 xx,xx,xx
-                     search_key=search_key.replace("'","\\'");
-
-                     String summary=jsonObject2.getString("desc");//简介
-                     summary=summary.replace("'","\\'");
-
-                     String pic_url=jsonObject2.getString("image");//图片链接
-                     String href_addr="https://www.8btc.com/article/"+jsonObject2.getString("id");//新闻内容地址
-                     String PublishTime=jsonObject2.getString("post_date_format");//publishtime
-                     if(PublishTime==null||PublishTime.equals("")){
-                         PublishTime=CheckUtil.dateToString(new Date());//publishtime
-
-                     }
-                     String from_site=author;
-                     dbUtil.insertAndQuery( "insert into news_info " +
-                             "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
-                             " values (?,?,?,?,?,?,?,?,?,?,?,?,?);",title,href_addr,new Object[]{"up","12",types,title,author,search_key,summary,pic_url,href_addr,PublishTime,from_site,"BABITE_NEWS",PublishTime});
-                     //"('up','" + 12 + "','" + types + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','XIHA_NEWS','"+PublishTime+"');", title,href_addr);
-
-                 }catch (Exception e){
-                         e.printStackTrace();
-                 }
 
 
+        }
 
-             }
-
-
-       }
 
     }
     //https://webapi.8btc.com/bbt_api/news/list?num=20&page=2

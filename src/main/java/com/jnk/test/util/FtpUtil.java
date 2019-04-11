@@ -49,7 +49,7 @@ public class FtpUtil {
 				System.out.println("login ftp error");
 			}
 			ftp.enterLocalPassiveMode();
-			ftp.changeWorkingDirectory("FtpUpload/admin/images/project_info_s/2019-03-16/");
+			ftp.changeWorkingDirectory("FtpUpload/");
 //			System.err.println(ftp.printWorkingDirectory());
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -64,13 +64,13 @@ public class FtpUtil {
 		try {
 			System.out.println("path "+ftp.printWorkingDirectory());
 
-//			boolean isRightDir = ftp.printWorkingDirectory().contains(path);
-//			if(!isRightDir){
-//			boolean flag = ftp.changeWorkingDirectory(path);
-//			if (!flag) {
-//				createD(ftp, path);
-//			}
-//			}
+			boolean isRightDir = ftp.printWorkingDirectory().contains(path);
+			if(!isRightDir){
+			boolean flag = ftp.changeWorkingDirectory(path);
+			if (!flag) {
+				createD(ftp, path);
+			}
+			}
 			ftp.setFileType(FTPClient.BINARY_FILE_TYPE);// 二进制文件
 			success = ftp.storeFile(filename, is);
 //			System.err.println("upload "+ftp.printWorkingDirectory()+"/"+filename+" "+success);
@@ -178,7 +178,7 @@ public class FtpUtil {
 		}
 		return imageName;
 	}
-	final  static String folderName = "admin/images/project_info_s/2019-03-16/";//项目图片 白皮书
+	final  static String folderName = "admin/images/project_info_s/2019-04-06/";//项目图片 白皮书
 //	static String folderNameteam = "admin/images/project_team_info/" + DateUtil.ForDate(new Date(), DateUtil.YYYY_MM_DD) + "/";//项目人物图片
 //	static String folderNamepimc = "admin/images/project_pimc_info/" + DateUtil.ForDate(new Date(), DateUtil.YYYY_MM_DD) + "/";//项目投资机构图片
 
@@ -194,7 +194,7 @@ public class FtpUtil {
 
 	@Test
 	public void putHotNodePic() throws Exception{
-		List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from project_info where id >15038");
+		List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from project_info where id =15413");
 		for(Map map:list){
 			String id=map.get("id").toString();//项目id
 			Object pic_urls=map.get("pic_url");//图片链接

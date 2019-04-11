@@ -136,71 +136,99 @@ public class DowloadPage_task {
 
     @Test
     public void BabiteDownloadPage() {
-        ///巴比特 带标签数据 1
+        ///巴比特 带标签挖矿 数据 1
         //19
         Document document = null;
-        try {
-            document = Jsoup.connect("https://www.8btc.com").header("Referer", "https://www.baidu.com/link?url=SpSgaS4MWk768w7_yN7yq2SyBAG_7MkeJGQpmFq2QLi&wd=&eqid=b6a850830001a7a7000000045bd4041d").get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (document == null)
-            return;
-        Elements elements = document.select("script");
-        Element element = elements.get(elements.size() - 4);
-        String item = element.html();
+        String data = HttpClientUtilPro.httpGetRequest("https://webapi.8btc.com/bbt_api/news/list?num=20&page=1&cat_id=6", RequestCount);
+        JSONObject jsonObject3 = JSONObject.fromObject(data);
+        JSONArray jsonArray2 = jsonObject3.getJSONObject("data").getJSONArray("list");
+        for (Object obj : jsonArray2) {
+            try {
+                JSONObject jsonObject2 = JSONObject.fromObject(obj);
+                String types = "挖矿";//标签词
+                String title = jsonObject2.getString("title");//标题
+                System.out.println("标题 : "+title);
+                String author = jsonObject2.getJSONObject("author_info").getString("display_name");//作者
+                System.out.println("作者 : "+author);
 
-        JSONObject json_b = JSONObject.fromObject(item.substring(25, item.indexOf(";(function(){var s")));
-        JSONArray jsonArray = json_b.getJSONObject("menu").getJSONArray("news");
-        for (int i = 1; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = JSONObject.fromObject(jsonArray.getJSONObject(i));
-            String key = jsonObject.getString("name");
-            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")) {
-                continue;
-            }
-            String id = jsonObject.getString("id");
-            System.out.println(key);
-            String rs = HttpClientUtilPro.httpGetRequest("https://app.blockmeta.com/w1/news/list?post_type=post&num=20&cat_id=" + id, RequestCount);
-            JSONObject jsonObject1 = JSONObject.fromObject(rs);
-            JSONArray jsonArray1 = jsonObject1.getJSONArray("list");
-            for (Object obj : jsonArray1) {
-                try {
-                    JSONObject jsonObject2 = JSONObject.fromObject(obj);
-                    String types = key;//标签词
-                    String title = jsonObject2.getString("title");//标题
-                    String author = jsonObject2.getJSONObject("author_info").getString("display_name");//作者
-
-                    String search_key = "";//标签 xx,xx,xx
-
-                    String summary = jsonObject2.getString("desc");//简介
-
-                    String pic_url = jsonObject2.getString("image");//图片链接
-                    String href_addr = "https://www.8btc.com/article/" + jsonObject2.getString("id");//新闻内容地址
-                    String PublishTime = jsonObject2.getString("post_date_format");//publishtime
-                    if (PublishTime == null || PublishTime.equals("")) {
-                        PublishTime = CheckUtil.dateToString(new Date());//publishtime
-
+                JSONArray jsonArrays=jsonObject2.getJSONArray("tags");//标签 xx,xx,xx
+                String search_key="";
+                for(Object o:jsonArrays){
+                    JSONObject jsonObject21=JSONObject.fromObject(o);
+                    String name=jsonObject21.getString("name");
+                    String slug=jsonObject21.getString("slug");
+                    if("".equals(slug)){
+                        search_key+=name+",";
+                    }else if(!"".equals(name)&&!"".equals(slug)){
+                        search_key+=((name+","+slug)+",");
                     }
-                    if (title != null && summary != null && pic_url != null && href_addr != null && author != null) {
-                        String from_site = author;
-                        String from_interface = "BABITE_NEWS";
 
-                        dbUtil.insertAndQuery("insert into news_info " +
-                                "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
-                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]{"up", "12", types, title, author, search_key, summary, pic_url, href_addr, PublishTime, from_site, from_interface,PublishTime});
-
-                        //"('up','" + 12 + "','" + types + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','BABITE_NEWS');", title,href_addr);
-                    }
-                } catch (Throwable e) {
-                    logger.error(getTrace(e));
-                    e.printStackTrace();
+                }
+                search_key=search_key.replace("'","\\'");
+                if(!search_key.equals("")){
+                    search_key=search_key.substring(0,search_key.length()-1);
+                    System.out.println("标签 : "+search_key);
                 }
 
 
+                String summary = jsonObject2.getString("desc");//简介
+                System.out.println("简介 : "+summary);
+
+                String pic_url = jsonObject2.getString("image");//图片链接
+                System.out.println("图片链接 : "+pic_url);
+
+                String href_addr = "https://www.8btc.com/article/" + jsonObject2.getString("id");//新闻内容地址
+                System.out.println("新闻内容地址 : "+href_addr);
+
+                String PublishTime = jsonObject2.getString("post_date_format");//publishtime
+                if (PublishTime == null || PublishTime.equals("")) {
+                    PublishTime = CheckUtil.dateToString(new Date());//publishtime
+
+                }
+                System.out.println("publishtime : "+PublishTime);
+
+                if (title != null && summary != null && pic_url != null && href_addr != null && author != null) {
+                    String from_site = author;
+                    String from_interface = "BABITE_NEWS";
+
+                    dbUtil.insertAndQuery("insert into news_info " +
+                            "(`status`,`news_type_id`,`types`,`title`,`author`,`search_key`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                            " values (?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]{"up", "12", types, title, author, search_key, summary, pic_url, href_addr, PublishTime, from_site, from_interface,PublishTime});
+
+                    //"('up','" + 12 + "','" + types + "','" + title + "','" + author + "','" + search_key + "','" + summary + "','" + pic_url + "','" + href_addr + "','" + PublishTime + "','" + from_site + "','BABITE_NEWS');", title,href_addr);
+                }
+            } catch (Throwable e) {
+                logger.error(getTrace(e));
+                e.printStackTrace();
             }
 
 
         }
+
+        if (document == null)
+            return;
+//        Elements elements = document.select("script");
+//        Element element = elements.get(elements.size() - 4);
+//        String item = element.html();
+
+//        JSONObject json_b = JSONObject.fromObject(item.substring(25, item.indexOf(";(function(){var s")));
+//        JSONArray jsonArray = json_b.getJSONObject("menu").getJSONArray("news");
+
+//        for (int i = 1; i < jsonArray.size(); i++) {
+//            JSONObject jsonObject = JSONObject.fromObject(jsonArray.getJSONObject(i));
+//            String key = jsonObject.getString("name");
+//            if (key.equals("最新") || key.equals("推荐") || key.equals("头条")) {
+//                continue;
+//            }
+//            String id = jsonObject.getString("id");
+//            System.out.println(key);
+//            String rs = HttpClientUtilPro.httpGetRequest("https://app.blockmeta.com/w1/news/list?post_type=post&num=20&cat_id=" + id, RequestCount);
+//            JSONObject jsonObject1 = JSONObject.fromObject(rs);
+//            JSONArray jsonArray1 = jsonObject1.getJSONArray("list");
+//
+//
+//
+//        }
 
     }
 
@@ -932,7 +960,7 @@ public class DowloadPage_task {
 
     }
 
-    //bitcoin86
+    //bitcoin86 最新
     @Test
     public void getbitcoin86DownLoad(){
         Document document=JsoupUtilPor.get("http://www.bitcoin86.com/bitcoin/list_17_1.html",RequestCount);
@@ -959,6 +987,7 @@ public class DowloadPage_task {
             System.out.println("新闻地址 : " + href_addr);
 
             String PublishTime = elemente.select("p.meta").select("font").text();
+            System.out.println("时间 : " + PublishTime);
 
             String from_interface = "bitcoin86";
             String from_site=from_interface;
@@ -967,6 +996,47 @@ public class DowloadPage_task {
             dbUtil.insertAndQuery("insert into news_info " +
                     "(`status`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
                     " values (?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr, new Object[]{"up", news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface,PublishTime});
+
+        }
+    }
+    //bitcoin86 挖矿
+    @Test
+    public void getbitcoin86DownLoadwk(){
+        Document document=JsoupUtilPor.get("http://www.bitcoin86.com/wk/",RequestCount);
+
+        Elements elements=document.select("article.excerpt");
+        for(Element elemente:elements){
+            String title = elemente.select("h2").text();
+            System.out.println("标题 : " + title);
+
+            String summary = elemente.select("p.note").text();
+            System.out.println("简介 : " + summary);
+
+            String author = "bitcoin86";
+            System.out.println("作者 : " + author);
+
+            String search_key = "";
+            System.out.println("关键字 : " + search_key);
+
+            String pic_url =  elemente.select("img").get(0).absUrl("data-original");
+
+            System.out.println("图片地址 : " + pic_url);
+
+            String href_addr = elemente.select("a.focus").get(0).absUrl("href");
+            System.out.println("新闻地址 : " + href_addr);
+
+
+            String PublishTime = elemente.select("p.meta").select("time").text()+" "+DateUtil.getNowhhmmss();;
+            System.out.println("时间 : " + PublishTime);
+
+            String from_interface = "bitcoin86";
+            String from_site=from_interface;
+            String news_type_id = "12";
+            String types="挖矿";
+            System.out.println("--------------------------------");
+            dbUtil.insertAndQuery("insert into news_info " +
+                    "(`status`,`news_type_id`,`types`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                    " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr, new Object[]{"up", news_type_id,types, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface,PublishTime});
 
         }
     }

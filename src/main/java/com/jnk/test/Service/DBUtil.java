@@ -66,6 +66,53 @@ public class DBUtil {
 
 
 
+    //视频插入
+    //有新闻就略过  没有就插入
+    public  synchronized  void  insertAndQueryvedio(String sql,String title,String hrefaddr,Object[] objects) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String querysql="select title from news_info where title=? or href_addr=?";
+        List list=jdbcTemplate.queryForList(querysql,new Object[]{title,hrefaddr});
+        System.out.println(list);
+
+
+        if(list.size()!=0){
+            return;
+        }else {
+            PreparedStatementCreator preparedStatementCreator = con -> {
+                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                for(int i=1;i<=objects.length;i++){
+                    ps.setObject(i,objects[i-1]);
+                }
+
+                return ps;
+            };
+            try {
+                jdbcTemplate.update(preparedStatementCreator,keyHolder);
+            }catch (Throwable e){
+                e.printStackTrace();
+                CheckUtil.getTrace(e);
+                return;
+            }
+//            //新闻资讯的图片 插入file_info表 标签遵守原规则为:header ()
+//            Long id= keyHolder.getKey().longValue();
+//            if(!"".equals(id)&&id!=null){
+//                List <Map<String,Object>>lists= jdbcTemplate.queryForList("select pic_url from news_info where id='"+id+"'");
+//                String pic_url=lists.get(0).get("pic_url").toString();
+//                String insertsql="insert into file_info (`target_table`,`target_field`,`target_id`,`file_path`) values ('news_info','header','"+id+"','"+pic_url+"')";
+//                jdbcTemplate.execute(insertsql);
+//                System.out.println(insertsql);
+//
+//            }
+
+        }
+
+    }
+
+
+
+
+
+
     //通用新闻插入 并返回自增主键值 用于插入file_info
     //有新闻就略过  没有就插入
     public  synchronized  void  insertAndQueryCoin(String updatesql,String insertsql ,String name,String symbol,Object[] objects) {

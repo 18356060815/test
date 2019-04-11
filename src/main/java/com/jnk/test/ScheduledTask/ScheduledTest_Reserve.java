@@ -154,7 +154,8 @@ public class ScheduledTest_Reserve  {
 //    @Scheduled(fixedDelay = 2800000)//bitcoin86
 //    public void bitcoin86_new_task() {
 //        logger.error("bitcoin86---------------------------------");
-//        dowloadPage_task.getbitcoin86DownLoad();
+//        dowloadPage_task.*();//挖矿
+//        dowloadPage_task.getbitcoin86DownLoad();//最新
 //    }
 //
 //    @Scheduled(fixedDelay = 2900000)//Fintech News
