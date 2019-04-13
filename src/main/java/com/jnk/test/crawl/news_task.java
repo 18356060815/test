@@ -21,7 +21,7 @@ public class news_task {
 
     //readhub 获取资讯
     @Test
-    public  void getReadHub(){
+    public  void getReadHub() throws InterruptedException {
         String jsondata=HttpClientUtilPro.httpGetRequest(READHUB_URL,RequestCount);
         System.out.println(jsondata);
         JSONObject jsonObject1=JSONObject.fromObject(jsondata);

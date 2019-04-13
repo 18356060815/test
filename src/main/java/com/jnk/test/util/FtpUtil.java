@@ -49,7 +49,7 @@ public class FtpUtil {
 				System.out.println("login ftp error");
 			}
 			ftp.enterLocalPassiveMode();
-			ftp.changeWorkingDirectory("FtpUpload/admin/images/project_info_s/2019-03-16/");
+			ftp.changeWorkingDirectory("FtpUpload/admin/images/dapp_info/2019-04-04/");
 //			System.err.println(ftp.printWorkingDirectory());
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -178,7 +178,7 @@ public class FtpUtil {
 		}
 		return imageName;
 	}
-	final  static String folderName = "admin/images/project_info_s/2019-03-16/";//项目图片 白皮书
+	final  static String folderName = "admin/images/dapp_info/2019-04-04/";//项目图片 白皮书
 //	static String folderNameteam = "admin/images/project_team_info/" + DateUtil.ForDate(new Date(), DateUtil.YYYY_MM_DD) + "/";//项目人物图片
 //	static String folderNamepimc = "admin/images/project_pimc_info/" + DateUtil.ForDate(new Date(), DateUtil.YYYY_MM_DD) + "/";//项目投资机构图片
 
@@ -307,4 +307,39 @@ String str = ObjectUtils.toString(obj, "");
 return StringUtils.isNotBlank(str);
 }
 
+
+	@Test
+	public void putDappPic() throws Exception{
+		List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from dapp_info where id >0");
+		for(Map map:list){
+			String id=map.get("id").toString();//项目id
+			Object pic_urls=map.get("pic_url");//图片链接
+			System.out.println(id);
+
+			String pic_urlrs=null;
+			if(isObjectNotEmpty(pic_urls)){
+				String pic_url=pic_urls.toString();
+				String pic_url_str=pic_url.split("/")[pic_url.split("/").length-1];
+				String filename = downloadPicture(pic_url, id + "." + pic_url_str.split("\\.")[pic_url_str.split("\\.").length - 1]);
+				if(filename!=null){
+					String imgpath=uploadfiles(filename,folderName);
+					pic_urlrs=imgpath;
+					System.out.println(pic_urlrs);
+
+				}
+			}
+
+			String updatesql="update dapp_info   ";
+			if(pic_urlrs!=null){
+				updatesql+=" set pic_url='"+pic_urlrs+"'  ";
+			}
+			updatesql+="  where id='"+id+"'";
+			System.out.println(updatesql);
+			if (pic_urlrs!=null) {
+				jdbcTemplate.execute(updatesql);
+			}
+			System.out.println("-------------------------------------");
+
+		}
+	}
 }
