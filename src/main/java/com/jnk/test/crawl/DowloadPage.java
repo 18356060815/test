@@ -98,7 +98,7 @@ public class DowloadPage {
 
     @Test
     public void BabiteDownloadPage() {
-        ///巴比特 矿业全部
+        ///巴比特 矿业全部 没有跑
         //19
         for(int i=1;i<30;i++){
             String data = HttpClientUtilPro.httpGetRequest("https://webapi.8btc.com/bbt_api/news/list?num=20&page="+i+"&cat_id=6", RequestCount);
@@ -1034,6 +1034,51 @@ public class DowloadPage {
                         " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
 
             }
+        }
+    }
+
+    //https://www.hellobtc.com/kp/kc/index_1.html 白话区块链 入门课 --->  新手必读
+    @Test
+    public void baihuaqukuailiang(){
+        Document document = JsoupUtilPor.get("https://www.hellobtc.com/kp/kc/index_2.html", RequestCount);
+        Elements elements = document.select("ul.contentlist").select("li");
+        for(Element element:elements){
+            String title = element.select("a.caption").get(0).text();
+            System.out.println("标题 "+title);
+
+            String surl = element.select("a.caption").get(0).attr("href");
+            Document document1 = JsoupUtilPor.get(surl, RequestCount);
+            System.out.println(document1);
+            String html = document1.select("hgroup").get(0).select("h5").get(0).html();
+
+            System.out.println("html "+html);
+
+//          System.out.println("标题 "+title);
+            String author=html.substring(html.indexOf("</span>")+7,html.indexOf("<span>"));
+
+            System.out.println("作者 "+author);
+//            System.out.println("关键字 "+search_key);
+//            System.out.println("简介 "+summary);
+//            System.out.println("图片 "+pic_url);
+//            System.out.println("新闻地址 "+href_addr);
+              String PublishTime=html.substring(4,html.indexOf("<span>"));
+
+              System.out.println("更新时间 "+PublishTime);
+              System.exit(0);
+
+//            String from_site="链闻";
+//            String from_interface="链闻";
+//            String news_type_id="12";
+//            String types="公司";
+//            dbUtil.insertAndQuery( "insert into news_info " +
+//                    "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+//                    " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+
+
+            System.out.println("===============================");
+
+
+
         }
     }
 }
