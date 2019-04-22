@@ -45,12 +45,15 @@ public class DownLoadvideo {
                 String videoUrl=jsonObject1.getString("videoUrl");//视频地址
                 System.out.println("视频地址 : " + videoUrl);
 
-                String PublishTime=jsonObject1.getString("publish_time");//时间
+                String PublishTime=jsonObject1.getString("create");//时间
                 System.out.println("时间 : " + PublishTime);
 
                 String href_addr="https://www.hecaijing.com/video/show/"+id+".html";
-                System.out.println("视频详情内容地址 : " + href_addr);
+                System.out.println("视频详情内容地址 : " + href_addr);//写入content里
 
+                String pic_url=jsonObject1.getString("poster");//封面图
+                //pic_url   放图片
+                //href_addr 放视频播放类型
                 Document document1 = JsoupUtilPor.get(href_addr, 1);
                 Element element = document1.select("div.video-content").get(0);
                 String trimstr = element.select("p.user-info").text().trim();
@@ -66,8 +69,9 @@ public class DownLoadvideo {
                     String article_type="2";//视频
                     String types="视频";
                     dbUtil.insertAndQueryvedio("insert into news_info " +
-                            "(`status`,`news_type_id`,`types`,`title`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`,`article_type`,`from_site_url`)" +
-                            " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]{"up", "15", types, title, author, summary, videoUrl, href_addr, PublishTime, from_site,from_interface,PublishTime,article_type,from_site_url});
+                            "(`status`,`news_type_id`,`types`,`title`,`author`,`summary`,`pic_url`,`content`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`,`article_type`,`from_site_url`)" +
+                            " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]
+                             {"up", "15", types, title, author, summary, pic_url,href_addr, videoUrl, PublishTime, from_site,from_interface,PublishTime,article_type,from_site_url});
 
                 }
 
