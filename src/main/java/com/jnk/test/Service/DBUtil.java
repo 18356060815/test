@@ -382,7 +382,34 @@ public class DBUtil {
 
 
     }
+    public  synchronized  void  insertOrUpdateDapp(String updatesql,String insertsql ,String dapp_id,Object[] objects) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
+        String querysql="select id from dapp_info where dapp_id=? ";
+        List list=jdbcTemplate.queryForList(querysql,new Object[]{dapp_id});
+        System.out.println(list);
+
+
+        if(list.size()!=0){
+            jdbcTemplate.update(updatesql);
+        }else {
+            PreparedStatementCreator preparedStatementCreator = con -> {
+                PreparedStatement ps = con.prepareStatement(insertsql, Statement.RETURN_GENERATED_KEYS);
+                for(int i=1;i<=objects.length;i++){
+                    ps.setObject(i,objects[i-1]);
+                }
+
+                return ps;
+            };
+            try {
+                jdbcTemplate.update(preparedStatementCreator,keyHolder);
+            }catch (Throwable e){
+                e.printStackTrace();
+                return;
+            }
+        }
+
+    }
 
 
 }

@@ -47,7 +47,7 @@ public class HttpClientUtilPro {
 
     private static PoolingHttpClientConnectionManager cm;
     private static String UTF_8 = "UTF-8";
-    private static int TIME_OUT =  6000;
+    private static int TIME_OUT =  8000;
 
     private static void init() {
         if (cm == null) {
@@ -244,10 +244,17 @@ public class HttpClientUtilPro {
      * @param request
      * @return
      */
-    private static String getResult(HttpRequestBase request,int requestCount) {
-        if(requestCount==3){
-            return null;
-        }
+    private static String getResult(HttpRequestBase request,int requestCount)  {
+//        if(requestCount==100){
+//            return null;
+//        }
+//        System.out.println("开始睡眠....");
+//        try {
+//            Thread.sleep(15000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("....睡眠结束");
         String EMPTY_STR = null;
         // CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpClient httpClient = getHttpClient();
@@ -277,7 +284,7 @@ public class HttpClientUtilPro {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("异常!重试中......");
-            CheckUtil.sleep(2000);
+            CheckUtil.sleep(15000);
             if(response!=null){
                 response.close();
             }
@@ -547,7 +554,7 @@ public class HttpClientUtilPro {
 
 
 
-    public static void main(String[]a){
+    public static void main(String[]a) throws InterruptedException {
         for(int i=0;i<100;i++){
             System.out.println("-----------------------------------------------start"+i);
 

@@ -1,5 +1,8 @@
 package com.jnk.test.util;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+
 public class LevenshteinDistance {
 
 
@@ -73,6 +76,11 @@ public class LevenshteinDistance {
         String a= "EOS";
         String b = "EOC";
         System.out.println("相似度："+getSimilarityRatio(a,b));
+    }
+
+    public static Boolean isObjectNotEmpty(Object obj) {
+        String str = ObjectUtils.toString(obj, "");
+        return StringUtils.isNotBlank(str);
     }
 
 }
