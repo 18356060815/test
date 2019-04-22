@@ -382,11 +382,11 @@ public class DBUtil {
 
 
     }
-    public  synchronized  void  insertOrUpdateDapp(String updatesql,String insertsql ,String categories_id,String dapp_id,Object[] objects) {
+    public  synchronized  void  insertOrUpdateDapp(String updatesql,String insertsql ,String dapp_id,Object[] objects) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        String querysql="select id from dapp_info where categories_id=? and dapp_id=? ";
-        List list=jdbcTemplate.queryForList(querysql,new Object[]{categories_id,dapp_id});
+        String querysql="select id from dapp_info where dapp_id=? ";
+        List list=jdbcTemplate.queryForList(querysql,new Object[]{dapp_id});
         System.out.println(list);
 
 

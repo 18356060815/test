@@ -48,7 +48,7 @@ public class DownLoadDapp {
                 String dau_last_day = jsonObject1.getString("dau_last_day");  // 24小时用户
                 String description = jsonObject1.getString("description");  // 简介
                 String description_short = jsonObject1.getString("description_short");  // 短简介
-               /* String logo_url = jsonObject1.getString("logo_url");  // 下载下来，放到服务器中*/
+                String logo_url = jsonObject1.getString("logo_url");  // 下载下来，放到服务器中
                 String tx_last_day = jsonObject1.getString("tx_last_day");  // 24小时交易数
                 String tx_last_week = jsonObject1.getString("tx_last_week");  // 7D交易数
                 String volume_last_day = jsonObject1.getString("volume_last_day");  // 这个字段时干什么啊
@@ -60,6 +60,8 @@ public class DownLoadDapp {
 
                 JSONArray json_categories=jsonObject1.getJSONArray("categories");
 
+
+                System.err.println(logo_url);
 
 //                Document documen=JsoupUtilPor.get("https://dapp.review/dapp/"+id+"/",RequestCount);
 ////                System.out.println(documen);
@@ -144,16 +146,20 @@ public class DownLoadDapp {
 //                String ids =  list.get(0).toString();
 //                String idss = JSONObject.fromObject(ids).getString("dapp_id");
 
-                String updatesql = "update dapp_info set dau_last_day ='"+dau_last_day+"',tx_last_day = '"+tx_last_day+"'" +
-                        ", tx_last_week = '"+tx_last_week+"',volume_last_day ='"+volume_last_day+"',volume_last_day_CNY = '"+volume_last_day_CNY+"',volume_last_day_USD ='"+volume_last_day_USD+"',volume_last_week = '"+volume_last_week+"'" +
-                        ",volume_last_week_CNY = '"+volume_last_week_CNY+"',volume_last_week_USD = '"+volume_last_week_USD+"',chains_id = '"+chains_id+"' where dapp_id = '"+id+"' and categories_id = '"+categories_id+"'";
+//                String updatesql = "update dapp_info set dau_last_day ='"+dau_last_day+"',tx_last_day = '"+tx_last_day+"'" +
+//                        ", tx_last_week = '"+tx_last_week+"',volume_last_day ='"+volume_last_day+"',volume_last_day_CNY = '"+volume_last_day_CNY+"',volume_last_day_USD ='"+volume_last_day_USD+"',volume_last_week = '"+volume_last_week+"'" +
+//                        ",volume_last_week_CNY = '"+volume_last_week_CNY+"',volume_last_week_USD = '"+volume_last_week_USD+"',chains_id = '"+chains_id+"' where dapp_id = '"+id+"' and categories_id = '"+categories_id+"'";
+
+                String updatesql = "update dapp_info set  pic_url = '"+logo_url+"' " +
+                        " where dapp_id = '"+id+"' ";
+
 
                 String insertsql = "insert into dapp_info (`dapp_id`,`title`,`dau_last_day`,`description`,`description_short`,`tx_last_day`,`tx_last_week`,`volume_last_day`,`volume_last_day_CNY`," +
                         "`volume_last_day_USD`,`volume_last_week`,`volume_last_week_CNY`,`volume_last_week_USD`,`categories_id`,`chains_id`)" +
                         " values " +
                         " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 //                if (StringUtils.isNotBlank(logo_url)) {
-                    dbUtil.insertOrUpdateDapp(updatesql, insertsql, categories_id, id, new Object[]{id, title, dau_last_day, description, description_short, tx_last_day, tx_last_week, volume_last_day, volume_last_day_CNY, volume_last_day_USD, volume_last_week, volume_last_week_CNY, volume_last_week_USD, categories_id, chains_id});
+                    dbUtil.insertOrUpdateDapp(updatesql, insertsql, id, new Object[]{id, title, dau_last_day, description, description_short, tx_last_day, tx_last_week, volume_last_day, volume_last_day_CNY, volume_last_day_USD, volume_last_week, volume_last_week_CNY, volume_last_week_USD, categories_id, chains_id});
                     System.out.println("----------------------------------------");
 //                }
             }
@@ -171,7 +177,7 @@ public class DownLoadDapp {
 
     @Test
     public void  getDappUrl() throws  Exception{
-        int i=3960;  // todo... 3271 3272 3419 3420 3422 3901  3927
+        int i=3960;  //
         a:
         while (true){
             System.out.println("开始睡觉....");
