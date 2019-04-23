@@ -49,7 +49,7 @@ public class FtpUtil {
 				System.out.println("login ftp error");
 			}
 			ftp.enterLocalPassiveMode();
-			ftp.changeWorkingDirectory("FtpUpload/");
+			ftp.changeWorkingDirectory("FtpUpload/admin/images/dapp_info/2019-04-04/");
 //			System.err.println(ftp.printWorkingDirectory());
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -65,12 +65,12 @@ public class FtpUtil {
 			System.out.println("path "+ftp.printWorkingDirectory());
 
 			boolean isRightDir = ftp.printWorkingDirectory().contains(path);
-			if(!isRightDir){
-			boolean flag = ftp.changeWorkingDirectory(path);
-			if (!flag) {
-				createD(ftp, path);
-			}
-			}
+//			if(!isRightDir){
+//			boolean flag = ftp.changeWorkingDirectory(path);
+//			if (!flag) {
+//				createD(ftp, path);
+//			}
+//			}
 			ftp.setFileType(FTPClient.BINARY_FILE_TYPE);// 二进制文件
 			success = ftp.storeFile(filename, is);
 //			System.err.println("upload "+ftp.printWorkingDirectory()+"/"+filename+" "+success);
@@ -311,14 +311,14 @@ return StringUtils.isNotBlank(str);
 	CreateNamePicture createNamePicture;
 	@Test
 	public void putDappPic() throws Exception{
-		List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from dapp_info where id >0");
+		List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from dapp_info where id >999");
 		for(Map map:list){
 			String id=map.get("id").toString();//项目id
 			String title=map.get("title").toString();//项目id
 			Object pic_urls=map.get("pic_url");//图片链接
 			Boolean objectNotEmpty = LevenshteinDistance.isObjectNotEmpty(pic_urls);
 			System.out.println(objectNotEmpty);
-			if (pic_urls.equals("null")){
+			if (pic_urls.equals("null") || pic_urls.equals("")){
 				// 生成图片  并且上传图片  filename 整路径
 				String filename = createNamePicture.getPicUrl(title,id);
 				System.err.println(filename+"1111111111111");
@@ -331,6 +331,13 @@ return StringUtils.isNotBlank(str);
 					String pic_url = pic_urls.toString();
 					String pic_url_str = pic_url.split("/")[pic_url.split("/").length - 1];
 					String filename = downloadPicture(pic_url, id + "." + pic_url_str.split("\\.")[pic_url_str.split("\\.").length - 1]);
+					if (filename == null){
+						filename = createNamePicture.getPicUrl(title,id);
+						System.err.println(filename+"1111111111111");
+						pic_url = uploadfiles(filename,folderName);
+						String updatesql = "update dapp_info  set pic_url='" + pic_url + "'where id = '"+id+"' ";
+						jdbcTemplate.execute(updatesql);
+					}
 					System.err.println(filename+"0000000000000");
 					if (filename != null) {
 						String imgpath = uploadfiles(filename, folderName);

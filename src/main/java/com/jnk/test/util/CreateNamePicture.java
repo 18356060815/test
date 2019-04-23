@@ -83,7 +83,7 @@ public class CreateNamePicture {
             }
             //首中次英 如 罗Q
             else if (isChinese(firstWritten) && !isChinese(secondWritten)) {
-                g2.drawString(nameWritten, 27, 60);
+                g2.drawString(nameWritten, 24, 60);
                 //首英,如 AB
             } else {
                 nameWritten = nameWritten.substring(0,1);
