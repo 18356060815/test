@@ -21,7 +21,7 @@ public class CreateNamePicture {
      **/
     public static void main(String[] args) throws Exception {
 
-        String ab = getPicUrl("AB", "1");
+        String ab = getPicUrl("M", "1");
         System.err.println(ab);
     }
 
@@ -95,13 +95,13 @@ public class CreateNamePicture {
             if(isChinese(nameWritten)) {
                 font = new Font("微软雅黑", Font.PLAIN, 50);
                 g2.setFont(font);
-                g2.drawString(nameWritten, 25, 70);
+                g2.drawString(nameWritten, 24, 70);
             }
             //英文
             else {
                 font = new Font("微软雅黑", Font.PLAIN, 55);
                 g2.setFont(font);
-                g2.drawString(nameWritten.toUpperCase(), 33, 67);
+                g2.drawString(nameWritten.toUpperCase(), 24, 70);
             }
         }
         BufferedImage rounded = makeRoundedCorner(bi, 99);

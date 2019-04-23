@@ -16,51 +16,51 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration
 @ComponentScan(basePackages = "com.jnk.*")
 public class ScheduledTest_Reserve  {
-    @Autowired
-    AllNewNewsInfo allNewNewsInfo;
-    private static final Logger logger = LoggerFactory.getLogger(ScheduledTest_Reserve.class);
-    @Autowired
-    DowloadPage_task dowloadPage_task;
-    @Autowired
-    vixCrawl vixCrawl;
-    @Autowired
-    CoinDownload coinDownload;
-
-    @Scheduled(fixedDelay = 30000)//币行情 30s一次
-    public void coinMarketcup_task() {
-        logger.error("币行情---------------------------------");
-        coinDownload.cralVirtualCcurrencyMarket();
-    }
-
-    //"0/10 * * * * ?"
-    @Scheduled(fixedDelay = 2000000)//巴比特
-    public void babite_task() {
-        logger.error("巴比特新闻开始---------------------------------");
-        dowloadPage_task.BabiteDownloadPage();//标签   (标签优先)
-        allNewNewsInfo.BabiteDownloadPage();//推荐最后
-
-    }
-
-    @Scheduled(fixedDelay = 2100000)//金色财经
-    public void jinse_task() {
-        logger.error("金色财经新闻开始---------------------------------");
-        dowloadPage_task.JinseDownloadPage();// (标签优先)-->推荐最后
-    }
-
-
-    @Scheduled(fixedDelay = 2200000)//火星财经
-    public void Huoxing_task() {
-        logger.error("火星财经新闻开始---------------------------------");
-        dowloadPage_task.HuoXingDownloadPage();// (标签优先)-->推荐最后
-
-    }
-
-    @Scheduled(fixedDelay = 2300000)//金牛财经
-    public void JinNiu_task() {
-        logger.error("金牛财经新闻开始---------------------------------");
-        dowloadPage_task.JinNiuDownloadPage();
-
-    }
+//    @Autowired
+//    AllNewNewsInfo allNewNewsInfo;
+//    private static final Logger logger = LoggerFactory.getLogger(ScheduledTest_Reserve.class);
+//    @Autowired
+//    DowloadPage_task dowloadPage_task;
+//    @Autowired
+//    vixCrawl vixCrawl;
+//    @Autowired
+//    CoinDownload coinDownload;
+//
+//    @Scheduled(fixedDelay = 30000)//币行情 30s一次
+//    public void coinMarketcup_task() {
+//        logger.error("币行情---------------------------------");
+//        coinDownload.cralVirtualCcurrencyMarket();
+//    }
+//
+//    //"0/10 * * * * ?"
+//    @Scheduled(fixedDelay = 2000000)//巴比特
+//    public void babite_task() {
+//        logger.error("巴比特新闻开始---------------------------------");
+//        dowloadPage_task.BabiteDownloadPage();//标签   (标签优先)
+//        allNewNewsInfo.BabiteDownloadPage();//推荐最后
+//
+//    }
+//
+//    @Scheduled(fixedDelay = 2100000)//金色财经
+//    public void jinse_task() {
+//        logger.error("金色财经新闻开始---------------------------------");
+//        dowloadPage_task.JinseDownloadPage();// (标签优先)-->推荐最后
+//    }
+//
+//
+//    @Scheduled(fixedDelay = 2200000)//火星财经
+//    public void Huoxing_task() {
+//        logger.error("火星财经新闻开始---------------------------------");
+//        dowloadPage_task.HuoXingDownloadPage();// (标签优先)-->推荐最后
+//
+//    }
+//
+//    @Scheduled(fixedDelay = 2300000)//金牛财经
+//    public void JinNiu_task() {
+//        logger.error("金牛财经新闻开始---------------------------------");
+//        dowloadPage_task.JinNiuDownloadPage();
+//
+//    }
 
 //    @Scheduled(fixedDelay = 2400000)//币莱财经
 //    public void Bilai_task() {

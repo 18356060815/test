@@ -49,7 +49,7 @@ public class FtpUtil {
 				System.out.println("login ftp error");
 			}
 			ftp.enterLocalPassiveMode();
-			ftp.changeWorkingDirectory("FtpUpload/admin/images/dapp_info/2019-04-04/");
+			ftp.changeWorkingDirectory("FtpUpload/");
 //			System.err.println(ftp.printWorkingDirectory());
 		} catch (SocketException e) {
 			e.printStackTrace();
