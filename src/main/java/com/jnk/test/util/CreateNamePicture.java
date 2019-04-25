@@ -1,11 +1,15 @@
 package com.jnk.test.util;
 
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -15,14 +19,11 @@ import javax.imageio.ImageIO;
 @Component
 public class CreateNamePicture {
 
-    /**
-     * @throws IOException
-     * @throws
-     **/
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        String ab = getPicUrl("M", "1");
-        System.err.println(ab);
+        createJpgByFontAndAlign("M", "center", 70, 100, 100, Color.gray, Color.white,
+                 new Font("微软雅黑", Font.PLAIN, 50), "f:/center.jpg");
+
     }
 
     public static String getPicUrl(String name,String id) throws Exception{
@@ -171,5 +172,68 @@ public class CreateNamePicture {
         g2.drawImage(image, 0, 0, null);
         g2.dispose();
         return output;
+    }
+
+
+    /**
+     * 根据提供的文字生成jpg图片
+     *
+     * @param s
+     *            String 文字
+     * @param align
+     *            文字位置（left,right,center）
+     * @param y
+     *            y坐标
+     * @param width
+     *              图片宽度
+     * @param height
+     *              图片高度
+     * @param bgcolor
+     *            Color 背景色
+     * @param fontcolor
+     *            Color 字色
+     * @param font
+     *            Font 字体字形字号
+     * @param jpgname
+     *            String jpg图片名
+     * @return
+     */
+    private static boolean createJpgByFontAndAlign(String s, String align, int y, int width, int height,
+                                                   Color bgcolor, Color fontcolor, Font font, String jpgname) {
+        try { // 宽度 高度
+            BufferedImage bimage = new BufferedImage(width,
+                    height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = bimage.createGraphics();
+            g.setColor(bgcolor); // 背景色
+            g.fillRect(0, 0, width, height); // 画一个矩形
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON); // 去除锯齿(当设置的字体过大的时候,会出现锯齿)
+            g.setColor(fontcolor); // 字的颜色
+            g.setFont(font); // 字体字形字号
+
+            int size = font.getSize();  //文字大小
+            int x = 5;
+            if(align.equals("left")){
+                x = 5;
+            } else if(align.equals("right")){
+                x = width - size * s.length() - 5;
+            } else if(align.equals("center")){
+                x = (width - size * s.length())/2;
+            }
+            g.drawString(s, x, y); // 在指定坐标除添加文字
+            g.dispose();
+            FileOutputStream out = new FileOutputStream(jpgname); // 指定输出文件
+            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+            JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(bimage);
+            param.setQuality(50f, true);
+            encoder.encode(bimage, param); // 存盘
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            System.out.println("createJpgByFont Failed!");
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

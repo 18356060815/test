@@ -146,12 +146,12 @@ public class DownLoadDapp {
 //                String ids =  list.get(0).toString();
 //                String idss = JSONObject.fromObject(ids).getString("dapp_id");
 
-//                String updatesql = "update dapp_info set dau_last_day ='"+dau_last_day+"',tx_last_day = '"+tx_last_day+"'" +
-//                        ", tx_last_week = '"+tx_last_week+"',volume_last_day ='"+volume_last_day+"',volume_last_day_CNY = '"+volume_last_day_CNY+"',volume_last_day_USD ='"+volume_last_day_USD+"',volume_last_week = '"+volume_last_week+"'" +
-//                        ",volume_last_week_CNY = '"+volume_last_week_CNY+"',volume_last_week_USD = '"+volume_last_week_USD+"',chains_id = '"+chains_id+"' where dapp_id = '"+id+"' and categories_id = '"+categories_id+"'";
+               String updatesql = "update dapp_info set dau_last_day ='"+dau_last_day+"',tx_last_day = '"+tx_last_day+"'" +
+                       ", tx_last_week = '"+tx_last_week+"',volume_last_day ='"+volume_last_day+"',volume_last_day_CNY = '"+volume_last_day_CNY+"',volume_last_day_USD ='"+volume_last_day_USD+"',volume_last_week = '"+volume_last_week+"'" +
+                        ",volume_last_week_CNY = '"+volume_last_week_CNY+"',volume_last_week_USD = '"+volume_last_week_USD+"',chains_id = '"+chains_id+"' where dapp_id = '"+id+"' and categories_id = '"+categories_id+"'";
 
-                String updatesql = "update dapp_info set  pic_url = '"+logo_url+"' " +
-                        " where dapp_id = '"+id+"' ";
+              //  String updatesql = "update dapp_info set  pic_url = '"+logo_url+"' " +
+              //          " where dapp_id = '"+id+"' ";
 
 
                 String insertsql = "insert into dapp_info (`dapp_id`,`title`,`dau_last_day`,`description`,`description_short`,`tx_last_day`,`tx_last_week`,`volume_last_day`,`volume_last_day_CNY`," +

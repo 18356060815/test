@@ -33,12 +33,13 @@ public class DownLoadvideo_task {
          Map map=new HashMap();
          map.put("Type","15");
          map.put("PageIndex","1");
-         map.put("PageSize","10");
+         map.put("PageSize","50");
 
          String data = HttpClientUtilPro.httpPostRequest("https://www.ihuoqiu.com/MAPI/GetArticleListData",map, httpGetRequest);
          data = JSON.parseObject(data, String.class);
          com.alibaba.fastjson.JSONObject jsonObjects = JSON.parseObject(data);
          com.alibaba.fastjson.JSONArray data1 = jsonObjects.getJSONArray("data");
+         System.out.println(data1);
          for(Object jsonObject:data1){
              JSONObject jsonObject1 = JSONObject.parseObject(jsonObject.toString());
              System.out.println(jsonObject1);
@@ -55,7 +56,12 @@ public class DownLoadvideo_task {
              String author=data2.getString("Author");//作者
              System.out.println("作者 : " + author);
 
-             String pic_url=data2.getString("ImgUrl");//图片
+
+             String from_site_url=data2.getString("AuthorLogo");//作者图片
+             System.out.println("作者图片 : " + from_site_url);
+
+
+             String pic_url=data2.getString("ImgUrl").replace("!webslt","");//图片
              System.out.println("图片 : " + pic_url);
 
              String summary=data2.getString("ShortDescription");//简介
@@ -70,11 +76,20 @@ public class DownLoadvideo_task {
              String from_interface = "火球财经";//来源
              System.out.println("来源 : " + from_interface);
 
-             String AudioAndVideoUrl=data2.getString("AudioAndVideoUrl");//视频地址
-             System.out.println("视频地址 : " + AudioAndVideoUrl);
+             String videoUrl=data2.getString("AudioAndVideoUrl");//视频地址
+             System.out.println("视频地址 : " + videoUrl);
 
-             HttpClientUtilPro.sendvedio(AudioAndVideoUrl,"F://"+data2.getString("ID")+".mp4");
+             String href_addr="http://m.ihuoqiu.com/article?id="+data2.getString("data1")+"&type=2";
+             System.out.println("源地址 : " + href_addr);
 
+             if (title != null && summary != null && videoUrl != null && href_addr != null && author != null) {
+                 String article_type="2";//视频
+                 String types="视频";
+                 dbUtil.insertAndQueryvedio("insert into news_info " +
+                         "(`status`,`news_type_id`,`types`,`title`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`,`article_type`,`from_site_url`)" +
+                         " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]{"up", "15", types, title, author, summary, videoUrl, href_addr, PublishTime, from_site,from_interface,PublishTime,article_type,from_site_url});
+
+             }
 
          }
 
@@ -108,7 +123,11 @@ public class DownLoadvideo_task {
 
                  String href_addr="https://www.hecaijing.com/video/show/"+id+".html";
                  System.out.println("视频详情内容地址 : " + href_addr);
+                 String pic_url=jsonObject1.getString("poster");//封面图
+                 System.out.println("封面图 : " + pic_url);
 
+                 //pic_url   放图片
+                 //href_addr 放视频播放类型
                  Document document1 = JsoupUtilPor.get(href_addr, 1);
                  Element element = document1.select("div.video-content").get(0);
                  String trimstr = element.select("p.user-info").text().trim();
@@ -117,15 +136,15 @@ public class DownLoadvideo_task {
 
                  String from_site_url = element.select("p.user-info").select("img").attr("src");//作者头像
                  System.out.println("作者头像 " + from_site_url);
-
-                 if (title != null && summary != null && videoUrl != null && href_addr != null && author != null) {
+                   if (title != null && summary != null && videoUrl != null && href_addr != null && author != null) {
                      String from_site = author;
                      String from_interface = "核财经";
                      String article_type="2";//视频
                      String types="视频";
                      dbUtil.insertAndQueryvedio("insert into news_info " +
-                             "(`status`,`news_type_id`,`types`,`title`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`,`article_type`,`from_site_url`)" +
-                             " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]{"up", "15", types, title, author, summary, videoUrl, href_addr, PublishTime, from_site,from_interface,PublishTime,article_type,from_site_url});
+                             "(`status`,`news_type_id`,`types`,`title`,`author`,`summary`,`pic_url`,`content`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`,`article_type`,`from_site_url`)" +
+                             " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", title, href_addr, new Object[]
+                             {"up", "15", types, title, author, summary, pic_url,href_addr, videoUrl, PublishTime, from_site,from_interface,PublishTime,article_type,from_site_url});
 
                  }
 
