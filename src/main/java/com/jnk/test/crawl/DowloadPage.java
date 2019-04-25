@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.jnk.test.util.CheckUtil.getTrace;
@@ -1040,45 +1041,194 @@ public class DowloadPage {
     //https://www.hellobtc.com/kp/kc/index_1.html 白话区块链 入门课 --->  新手必读
     @Test
     public void baihuaqukuailiang(){
-        Document document = JsoupUtilPor.get("https://www.hellobtc.com/kp/kc/index_2.html", RequestCount);
-        Elements elements = document.select("ul.contentlist").select("li");
-        for(Element element:elements){
-            String title = element.select("a.caption").get(0).text();
-            System.out.println("标题 "+title);
+        Integer i = 2;
+        a:
+        while (true) {
+            Document document = JsoupUtilPor.get("https://www.hellobtc.com/kp/kc/index_"+i+".html", RequestCount);
+            Elements elements = document.select("ul.contentlist").select("li");
+            for (Element element : elements) {
+                String title = element.select("a.caption").get(0).text();
+                System.out.println("标题 " + title);
 
-            String surl = element.select("a.caption").get(0).attr("href");
-            Document document1 = JsoupUtilPor.get(surl, RequestCount);
-            System.out.println(document1);
-            String html = document1.select("hgroup").get(0).select("h5").get(0).html();
+                String surl = element.select("a.caption").get(0).absUrl("href");
+                Document document1 = JsoupUtilPor.get(surl, RequestCount);
+//            System.out.println(document1);
+                String html = document1.select("hgroup").get(0).select("h5").get(0).html();
 
-            System.out.println("html "+html);
+                System.out.println("html " + html);
 
 //          System.out.println("标题 "+title);
-            String author=html.substring(html.indexOf("</span>")+7,html.indexOf("<span>"));
+                String author = html.substring(html.indexOf("作者：") + 3, html.indexOf("来源：")).replace("</span>", "").replace("<span>", "");
 
-            System.out.println("作者 "+author);
-//            System.out.println("关键字 "+search_key);
-//            System.out.println("简介 "+summary);
-//            System.out.println("图片 "+pic_url);
-//            System.out.println("新闻地址 "+href_addr);
-              String PublishTime=html.substring(4,html.indexOf("<span>"));
+                System.out.println("作者 " + author);
+                String search_key = "";
+                System.out.println("关键字 " + search_key);
+                String summary = element.select("a.intro").get(0).text();
+                String pic_url = element.select("img").get(0).absUrl("src");
+                String href_addr = element.select("a.caption").get(0).attr("href");
+                String PublishTime = html.substring(0, html.indexOf("<span>"));
+                System.out.println("简介 " + summary);
+                System.out.println("图片 " + pic_url);
+                System.out.println("新闻地址 " + href_addr);
+                System.out.println("更新时间 " + PublishTime);
+//              System.exit(0);
 
-              System.out.println("更新时间 "+PublishTime);
-              System.exit(0);
+                String from_site = "白话区块链";
+                String from_interface = "白话区块链";
+                String news_type_id = "12";
+                String types = "新手必读";
+                dbUtil.insertAndQuery("insert into news_info " +
+                                "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+                        new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
 
-//            String from_site="链闻";
-//            String from_interface="链闻";
-//            String news_type_id="12";
-//            String types="公司";
-//            dbUtil.insertAndQuery( "insert into news_info " +
-//                    "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
-//                    " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+
+                System.out.println("===============================");
+            }
+            i++;
+            if (i>6){
+                break a;
+            }
+        }
+    }
+
+
+    // https://www.odaily.com/api/pp/api/user/2147487207/posts?b_id=&per_page=50
+    @Test
+    public void shitaishuo(){       // 师太说
+        String x = HttpClientUtilPro.httpGetRequest("https://www.odaily.com/api/pp/api/user/2147487207/posts?b_id=&per_page=50", RequestCount);
+        JSONObject jsonObject = JSONObject.fromObject(x);
+        JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("items");
+//        JSONObject jsonObject2 = JSONObject.fromObject(jsonArray);
+//        JSONArray jsonArray1 = jsonObject2.getJSONArray("items");
+
+        for (Object o : jsonArray){
+            JSONObject jsonObject1 = JSONObject.fromObject(o);
+            String title = jsonObject1.getString("title");
+            System.out.println("标题 " + title);
+            String author = "师太说区块链";
+            System.out.println("作者 " + author);
+            String search_key = "";
+            System.out.println("关键字 " + search_key);
+            String summary = jsonObject1.getString("summary");
+            System.out.println("简介 " + summary);
+            String pic_url = jsonObject1.getString("cover").substring(0,jsonObject1.getString("cover").length()-8);
+            System.out.println("图片 " + pic_url);
+            String href_addr = "https://www.odaily.com/post/"+jsonObject1.getString("id");
+            System.out.println("新闻地址 " + href_addr);
+            String PublishTime = jsonObject1.getString("published_at");
+            System.out.println("更新时间 " + PublishTime);
+            String from_site = "师太说区块链";
+            String from_interface = "师太说区块链";
+            String news_type_id = "12";
+            String types = "新手必读";
+
+            dbUtil.insertAndQuery("insert into news_info " +
+                            "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                            " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+                    new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
 
 
             System.out.println("===============================");
+        }
+
+    }
+    // https://www.cybtc.com/forum.php?mod=forumdisplay&fid=120&filter=typeid&typeid=56
+    @Test
+    public void wakuangji() {     // 彩云比特 （挖矿  上线前跑全部的  然后只跑一次就可以了）
+        Integer t = 1;
+        a:
+        while (true) {
+//            Document document = JsoupUtilPor.get("http://www.wabi.com/news/mining", RequestCount);  // 第一页数据
+            Document document = JsoupUtilPor.get("http://www.wabi.com/news/mining/page_"+t+".html", RequestCount);  // 第二页以后的数据
+//            System.out.println(document);
+            Elements elements = document.select("div.news-list").select("ul#newslist-all").select("li");
+            for (int i = 1; i < elements.size() - 1; i++) {
+                Element element = elements.get(i);
+                System.out.println(element);
+//                String id = element.attr("id");
+//                if (id == null || id.equals("")) {
+//                    continue;
+//                }
+                String title = element.select("h3").get(0).select("a").get(0).text();
+                System.out.println("标题 " + title);
+                String href_addr = element.select("div.img").get(0).select("a").get(0).attr("href");
+                System.out.println("新闻地址 " + href_addr);
+                Document document1 = JsoupUtilPor.get(href_addr, RequestCount);
+//                System.out.println(document1);
+                String author = document1.select("div.box-l").select("span.date").text();
+                String PublishTime = author.substring(0,19);
+                System.out.println("更新时间 " + PublishTime);
+                author = author.substring(19,author.length());
+                if (author.length() == 0){
+                    author = "挖币网";
+                }else {
+                    author = author.substring(2,author.length());
+                }
+                System.out.println("作者 " + author);
+                String search_key = "";
+                System.out.println("关键字 " + search_key);
+                String summary = "";
+                System.out.println("简介 " + summary);
+                String pic_url = element.select("div.img").get(0).select("img").get(0).absUrl("src");
+                System.out.println("图片 " + pic_url);
+                String from_site = "挖币网";
+                String from_interface = "挖币网";
+                String news_type_id = "12";
+                String types = "挖矿";
+                dbUtil.insertAndQuery("insert into news_info " +
+                                "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+                        new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
+                System.out.println("====================================================================================");
+            }
+
+            t ++;
+            if (t>1000){
+                break a;
+            }
+        }
+    }
 
 
-
+    @Test
+    public void biyuan() {     // 币源 （挖矿  上线前跑全部的  然后只跑一次就可以了）
+        Integer t = 1;
+        a:
+        while (true) {
+            Document document = JsoupUtilPor.get("https://www.coingogo.com/news/index/"+t+"?parent=9", RequestCount);
+            Elements elements = document.select("div.news-comment").select("ul.clearfix").select("li");
+            for (int i = 0; i < elements.size(); i++) {
+                Element element = elements.get(i);
+//                System.out.println(element);
+                String title = element.select("div.news-content-text").get(0).select("a").get(0).text();
+                System.out.println("标题 " + title);
+                String href_addr = element.select("a").get(0).absUrl("href");
+                System.out.println("新闻地址 " + href_addr);
+                String PublishTime = element.select("p.news-content-time").select("span.news-content-time-span1").text()+DateUtil.ForDate(new Date(), " hh:mm:ss");
+                System.out.println("更新时间 " + PublishTime);
+                String author = element.select("div.news-content-text1").select("div.news-content-text-right-name").text();
+                System.out.println("作者 " + author);
+                String search_key = "";
+                System.out.println("关键字 " + search_key);
+                String summary = "";
+                System.out.println("简介 " + summary);
+                String pic_url = element.select("div.news-content-text1").get(0).select("div.news-content-text-right").get(0).select("img").attr("src");
+                System.out.println("图片 " + pic_url);
+                String from_site = "币源";
+                String from_interface = "币源";
+                String news_type_id = "12";
+                String types = "挖矿";
+                dbUtil.insertAndQuery("insert into news_info " +
+                                "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+                        new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
+                System.out.println("====================================================================================");
+            }
+            t++;
+            if (t>100){
+                break a;
+            }
         }
     }
 }

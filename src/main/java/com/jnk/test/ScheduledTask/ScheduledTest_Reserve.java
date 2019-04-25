@@ -16,16 +16,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration
 @ComponentScan(basePackages = "com.jnk.*")
 public class ScheduledTest_Reserve  {
-//    @Autowired
-//    AllNewNewsInfo allNewNewsInfo;
-//    private static final Logger logger = LoggerFactory.getLogger(ScheduledTest_Reserve.class);
-//    @Autowired
-//    DowloadPage_task dowloadPage_task;
-//    @Autowired
-//    vixCrawl vixCrawl;
-//    @Autowired
-//    CoinDownload coinDownload;
-//
+    @Autowired
+    AllNewNewsInfo allNewNewsInfo;
+    private static final Logger logger = LoggerFactory.getLogger(ScheduledTest_Reserve.class);
+    @Autowired
+    DowloadPage_task dowloadPage_task;
+    @Autowired
+    vixCrawl vixCrawl;
+    @Autowired
+    CoinDownload coinDownload;
+
 //    @Scheduled(fixedDelay = 30000)//币行情 30s一次
 //    public void coinMarketcup_task() {
 //        logger.error("币行情---------------------------------");
@@ -160,6 +160,26 @@ public class ScheduledTest_Reserve  {
 ////        logger.error("公链信息---------------------------------");
 ////        coinDownload.getCoin();
 ////    }
+
+//    @Scheduled(fixedDelay = 600000)//白话区块链
+//    public void gonglian() {
+//        logger.error("白话区块链---------------------------------");
+//        dowloadPage_task.baihuaqukuailiang();
+//    }
+
+//    @Scheduled(fixedDelay = 600000)//师太说
+//    public void shitaishuo() {
+//        logger.error("师太说---------------------------------");
+//        dowloadPage_task.shitaishuo();
+//    }
+
+//    @Scheduled(fixedDelay = 600000)//  挖矿机
+//    public void wakuangji() {
+//        logger.error("挖矿机---------------------------------");
+//        dowloadPage_task.shitaishuo();
+//    }
+
+
 
 
 }

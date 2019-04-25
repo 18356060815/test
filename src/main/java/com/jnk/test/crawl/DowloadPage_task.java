@@ -1376,6 +1376,163 @@ public class DowloadPage_task {
         }
     }
 
+
+
+    //https://www.hellobtc.com/kp/kc/index_1.html 白话区块链 入门课 --->  新手必读
+    @Test
+    public void baihuaqukuailiang(){
+        Document document = JsoupUtilPor.get("https://www.hellobtc.com/kp/kc/index.html", RequestCount);
+        Elements elements = document.select("ul.contentlist").select("li");
+        for(Element element:elements){
+            String title = element.select("a.caption").get(0).text();
+            System.out.println("标题 "+title);
+
+            String surl = element.select("a.caption").get(0).absUrl("href");
+            Document document1 = JsoupUtilPor.get(surl, RequestCount);
+//            System.out.println(document1);
+            String html = document1.select("hgroup").get(0).select("h5").get(0).html();
+
+            System.out.println("html "+html);
+
+//          System.out.println("标题 "+title);
+            String author=html.substring(html.indexOf("作者：")+3,html.indexOf("来源：")).replace("</span>","").replace("<span>","");
+
+            System.out.println("作者 "+author);
+            String search_key = "";
+            System.out.println("关键字 "+search_key);
+            String summary = element.select("a.intro").get(0).text();
+            String pic_url = element.select("img").get(0).absUrl("src");
+            String href_addr =  element.select("a.caption").get(0).attr("href");
+            String PublishTime=html.substring(0,html.indexOf("<span>"));
+            System.out.println("简介 "+summary);
+            System.out.println("图片 "+pic_url);
+            System.out.println("新闻地址 "+href_addr);
+            System.out.println("更新时间 "+PublishTime);
+//              System.exit(0);
+
+            String from_site="白话区块链";
+            String from_interface="白话区块链";
+            String news_type_id="12";
+            String types="新手必读";
+            dbUtil.insertAndQuery( "insert into news_info " +
+                    "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                    " values (?,?,?,?,?,?,?,?,?,?,?,?,?)",title,href_addr,
+                    new Object[] {"up",types,news_type_id,title,search_key,author,summary,pic_url,href_addr,PublishTime,from_site,from_interface,PublishTime});
+
+
+            System.out.println("===============================");
+
+
+
+        }
+    }
+
+
+    @Test
+    public void shitaishuo() {      // 师太说  上线前跑一次全的  然后智跑第一页
+        String x = HttpClientUtilPro.httpGetRequest("https://www.odaily.com/api/pp/api/user/2147487207/posts?b_id=&per_page=50", RequestCount);
+        JSONObject jsonObject = JSONObject.fromObject(x);
+        JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("items");
+//        JSONObject jsonObject2 = JSONObject.fromObject(jsonArray);
+//        JSONArray jsonArray1 = jsonObject2.getJSONArray("items");
+
+        for (Object o : jsonArray) {
+            JSONObject jsonObject1 = JSONObject.fromObject(o);
+            String title = jsonObject1.getString("title");
+            System.out.println("标题 " + title);
+            String author = "师太说区块链";
+            System.out.println("作者 " + author);
+            String search_key = "";
+            System.out.println("关键字 " + search_key);
+            String summary = jsonObject1.getString("summary");
+            System.out.println("简介 " + summary);
+            String pic_url = jsonObject1.getString("cover").substring(0, jsonObject1.getString("cover").length() - 8);
+            System.out.println("图片 " + pic_url);
+            String href_addr = "https://www.odaily.com/post/" + jsonObject1.getString("id");
+            System.out.println("新闻地址 " + href_addr);
+            String PublishTime = jsonObject1.getString("published_at");
+            System.out.println("更新时间 " + PublishTime);
+            String from_site = "师太说区块链";
+            String from_interface = "师太说区块链";
+            String news_type_id = "12";
+            String types = "新手必读";
+
+            dbUtil.insertAndQuery("insert into news_info " +
+                            "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                            " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+                    new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
+
+
+            System.out.println("===============================");
+        }
+    }
+
+//    @Test
+//    public void chaiyunbite() {     // 彩云比特 （挖矿  上线前跑全部的  然后只跑一次就可以了）
+//        Integer t = 1;
+//        a:
+//        while (true) {
+//            Document document = JsoupUtilPor.get("https://www.cybtc.com/forum.php?mod=forumdisplay&fid=120&typeid=56&typeid=56&filter=typeid&page=" + t + "&t=", RequestCount);
+////        System.out.println(document);
+//            Elements elements = document.select("form#moderate").select("table").select("tbody");
+//            for (int i = 1; i < elements.size() - 1; i++) {
+//                Element element = elements.get(i);
+//                System.out.println(element);
+////            System.out.println(element);
+////            System.out.println("标题 " + title);
+////            System.out.println("作者 " + author);
+////            System.out.println("关键字 " + search_key);
+////            System.out.println("简介 " + summary);
+////            System.out.println("图片 " + pic_url);
+////            System.out.println("新闻地址 " + href_addr);
+////            System.out.println("更新时间 " + PublishTime);
+////            String from_site = "师太说区块链";
+////            String from_interface = "师太说区块链";
+////            String news_type_id = "12";
+////            String types = "新手必读";
+//                String id = element.attr("id");
+//                if (id == null || id.equals("")) {
+//                    continue;
+//                }
+//                String title = element.select("tr.first-tr").get(0).select("a.xst").get(0).text();
+//                System.out.println("标题 " + title);
+//                String author = element.select("tr.third-tr").get(0).select("div.third-tr-second-td-name").get(0).select("a").get(0).text();
+//                System.out.println("作者 " + author);
+//                String search_key = "";
+//                System.out.println("关键字 " + search_key);
+//                String summary = element.select("tr.second-tr").get(0).select("td").get(0).text();
+//                System.out.println("简介 " + summary);
+//                String pic_url = "";  // todo ... 图片不存在
+//                System.out.println("图片 " + pic_url);
+//                String href_addr = "https://www.cybtc.com/" + element.select("tr.first-tr").get(0).select("a").get(0).attr("href");
+//                System.out.println("新闻地址 " + href_addr);
+//                String PublishTime = element.select("tr.third-tr").get(0).select("td").get(0).select("div").get(0).select("span").attr("title") + DateUtil.ForDate(new Date(), " hh:mm:ss");
+//                if (PublishTime.length() != 18) {
+//                    PublishTime = element.select("tr.third-tr").get(0).select("td").get(0).select("div").get(0).text() + DateUtil.ForDate(new Date(), " hh:mm:ss");
+//                }
+//                System.out.println("更新时间 " + PublishTime);
+//                String from_site = "彩云比特";
+//                String from_interface = "彩云比特";
+//                String news_type_id = "12";
+//                String types = "挖矿";
+//                dbUtil.insertAndQuery("insert into news_info " +
+//                                "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+//                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+//                        new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
+//                System.out.println("====================================================================================");
+//            }
+//
+//            t++;
+//            if (t > 1000) {
+//                break a;
+//            }
+//        }
+//    }
+
+
+
+
+
 //    @Test
 //    public void getbishijie(){
 //        Map headerMap =new HashMap();
@@ -1396,6 +1553,64 @@ public class DowloadPage_task {
 //
 //
 //     }
+
+
+    @Test
+    public void wakuangji() {     // 挖矿机 （挖矿  上线前跑全部的  然后只跑一次就可以了）
+        Integer t = 1;
+        a:
+        while (true) {
+//            Document document = JsoupUtilPor.get("http://www.wabi.com/news/mining", RequestCount);  // 第一页数据
+            Document document = JsoupUtilPor.get("http://www.wabi.com/news/mining/page_"+t+".html", RequestCount);  // 第二页以后的数据
+//            System.out.println(document);
+            Elements elements = document.select("div.news-list").select("ul#newslist-all").select("li");
+            for (int i = 1; i < elements.size() - 1; i++) {
+                Element element = elements.get(i);
+                System.out.println(element);
+//                String id = element.attr("id");
+//                if (id == null || id.equals("")) {
+//                    continue;
+//                }
+                String title = element.select("h3").get(0).select("a").get(0).text();
+                System.out.println("标题 " + title);
+                String href_addr = element.select("div.img").get(0).select("a").get(0).attr("href");
+                System.out.println("新闻地址 " + href_addr);
+                Document document1 = JsoupUtilPor.get(href_addr, RequestCount);
+//                System.out.println(document1);
+                String author = document1.select("div.box-l").select("span.date").text();
+                String PublishTime = author.substring(0,19);
+                System.out.println("更新时间 " + PublishTime);
+                author = author.substring(19,author.length());
+                if (author.length() == 0){
+                    author = "挖币网";
+                }else {
+                    author = author.substring(2,author.length());
+                }
+                System.out.println("作者 " + author);
+                String search_key = "";
+                System.out.println("关键字 " + search_key);
+                String summary = "";
+                System.out.println("简介 " + summary);
+                String pic_url = element.select("div.img").get(0).select("img").get(0).absUrl("src");
+                System.out.println("图片 " + pic_url);
+                String from_site = "挖币网";
+                String from_interface = "挖币网";
+                String news_type_id = "12";
+                String types = "挖矿";
+                dbUtil.insertAndQuery("insert into news_info " +
+                                "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+                        new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
+                System.out.println("====================================================================================");
+            }
+
+            t ++;
+            if (t>1000){
+                break a;
+            }
+        }
+    }
+
 }
 
 
