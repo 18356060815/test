@@ -34,7 +34,7 @@ public class DownLoadDapp {
     DBUtil dbUtil;
 
     @Test
-    public void  getDapp() throws  Exception{
+    public void  getDapp(){
         int i=1;  // todo 28  34 81 86 117
         a:
         while (true){
@@ -48,7 +48,7 @@ public class DownLoadDapp {
                 String dau_last_day = jsonObject1.getString("dau_last_day");  // 24小时用户
                 String description = jsonObject1.getString("description");  // 简介
                 String description_short = jsonObject1.getString("description_short");  // 短简介
-                String logo_url = jsonObject1.getString("logo_url");  // 下载下来，放到服务器中
+//                String logo_url = jsonObject1.getString("logo_url");  // 下载下来，放到服务器中
                 String tx_last_day = jsonObject1.getString("tx_last_day");  // 24小时交易数
                 String tx_last_week = jsonObject1.getString("tx_last_week");  // 7D交易数
                 String volume_last_day = jsonObject1.getString("volume_last_day");  // 这个字段时干什么啊
@@ -61,7 +61,7 @@ public class DownLoadDapp {
                 JSONArray json_categories=jsonObject1.getJSONArray("categories");
 
 
-                System.err.println(logo_url);
+//                System.err.println(logo_url);
 
 //                Document documen=JsoupUtilPor.get("https://dapp.review/dapp/"+id+"/",RequestCount);
 ////                System.out.println(documen);

@@ -1556,12 +1556,9 @@ public class DowloadPage_task {
 
 
     @Test
-    public void wakuangji() {     // 挖矿机 （挖矿  上线前跑全部的  然后只跑一次就可以了）
-        Integer t = 1;
-        a:
-        while (true) {
+    public void wakuangji() {     // 挖矿机 （挖矿  ）
 //            Document document = JsoupUtilPor.get("http://www.wabi.com/news/mining", RequestCount);  // 第一页数据
-            Document document = JsoupUtilPor.get("http://www.wabi.com/news/mining/page_"+t+".html", RequestCount);  // 第二页以后的数据
+            Document document = JsoupUtilPor.get("http://www.wabi.com/news/mining/page_"+1+".html", RequestCount);  // 第二页以后的数据
 //            System.out.println(document);
             Elements elements = document.select("div.news-list").select("ul#newslist-all").select("li");
             for (int i = 1; i < elements.size() - 1; i++) {
@@ -1604,11 +1601,43 @@ public class DowloadPage_task {
                 System.out.println("====================================================================================");
             }
 
-            t ++;
-            if (t>1000){
-                break a;
+    }
+
+
+
+    @Test
+    public void biyuan() {     // 币源 （挖矿  上线前跑全部的  然后只跑一次就可以了）
+
+            Document document = JsoupUtilPor.get("https://www.coingogo.com/news/index/"+1+"?parent=9", RequestCount);
+            Elements elements = document.select("div.news-comment").select("ul.clearfix").select("li");
+            for (int i = 0; i < elements.size(); i++) {
+                Element element = elements.get(i);
+//                System.out.println(element);
+                String title = element.select("div.news-content-text").get(0).select("a").get(0).text();
+                System.out.println("标题 " + title);
+                String href_addr = element.select("a").get(0).absUrl("href");
+                System.out.println("新闻地址 " + href_addr);
+                String PublishTime = element.select("p.news-content-time").select("span.news-content-time-span1").text()+DateUtil.ForDate(new Date(), " hh:mm:ss");
+                System.out.println("更新时间 " + PublishTime);
+                String author = element.select("div.news-content-text1").select("div.news-content-text-right-name").text();
+                System.out.println("作者 " + author);
+                String search_key = "";
+                System.out.println("关键字 " + search_key);
+                String summary = "";
+                System.out.println("简介 " + summary);
+                String pic_url = element.select("div.news-content-text1").get(0).select("div.news-content-text-right").get(0).select("img").attr("src");
+                System.out.println("图片 " + pic_url);
+                String from_site = "币源";
+                String from_interface = "币源";
+                String news_type_id = "12";
+                String types = "挖矿";
+                dbUtil.insertAndQuery("insert into news_info " +
+                                "(`status`,`types`,`news_type_id`,`title`,`search_key`,`author`,`summary`,`pic_url`,`href_addr`,`publish_time`,`from_site`,`from_interface`,`create_time`)" +
+                                " values (?,?,?,?,?,?,?,?,?,?,?,?,?)", title, href_addr,
+                        new Object[]{"up", types, news_type_id, title, search_key, author, summary, pic_url, href_addr, PublishTime, from_site, from_interface, PublishTime});
+                System.out.println("====================================================================================");
             }
-        }
+
     }
 
 }
