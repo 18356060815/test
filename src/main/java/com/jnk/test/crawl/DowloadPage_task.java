@@ -37,6 +37,7 @@ import static com.jnk.test.util.DateUtil.getLiandedeLater;
 @SpringBootTest
 @Service
 public class DowloadPage_task {
+
     private static final Logger logger = LoggerFactory.getLogger(DowloadPage_task.class);
     final static int RequestCount = 1;
     @Autowired
